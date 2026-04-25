@@ -3,3 +3,4 @@
 [2026-04-24 11:30:00] init: add .gitignore, README, Dockerfile stub
 [2026-04-24 14:05:00] domain: add User entity and UserRole enum
 [2026-04-25 09:40:00] domain: add Course, Module, Activity entities
+[2026-04-25 11:15:00] domain: add Team, TeamMember, TaskItem entities
