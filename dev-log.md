@@ -3,3 +3,4 @@
 [2026-04-24 17:22:00] frontend: add base routing and app shell
 [2026-04-25 13:50:00] frontend: login page component and form
 [2026-04-25 15:30:00] frontend: register page, auth service stub
+[2026-04-28 14:45:00] frontend: HTTP interceptor for JWT bearer token
