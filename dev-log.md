@@ -4,3 +4,4 @@
 [2026-04-24 14:05:00] domain: add User entity and UserRole enum
 [2026-04-25 09:40:00] domain: add Course, Module, Activity entities
 [2026-04-25 11:15:00] domain: add Team, TeamMember, TaskItem entities
+[2026-04-28 10:00:00] infra: EF Core setup, ScoreHubDbContext
