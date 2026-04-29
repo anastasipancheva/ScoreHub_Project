@@ -5,3 +5,4 @@
 [2026-04-25 15:30:00] frontend: register page, auth service stub
 [2026-04-28 14:45:00] frontend: HTTP interceptor for JWT bearer token
 [2026-04-28 16:10:00] frontend: auth guard, route protection
+[2026-04-29 14:00:00] frontend: dashboard page skeleton
