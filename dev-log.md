@@ -6,3 +6,4 @@
 [2026-04-25 11:15:00] domain: add Team, TeamMember, TaskItem entities
 [2026-04-28 10:00:00] infra: EF Core setup, ScoreHubDbContext
 [2026-04-28 12:20:00] infra: JWT service implementation
+[2026-04-29 09:25:00] api: AuthController - register/login endpoints
