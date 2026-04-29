@@ -7,3 +7,4 @@
 [2026-04-28 10:00:00] infra: EF Core setup, ScoreHubDbContext
 [2026-04-28 12:20:00] infra: JWT service implementation
 [2026-04-29 09:25:00] api: AuthController - register/login endpoints
+[2026-04-29 11:40:00] infra: password hashing with BCrypt
