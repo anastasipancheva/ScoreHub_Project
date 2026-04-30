@@ -9,3 +9,4 @@
 [2026-04-29 09:25:00] api: AuthController - register/login endpoints
 [2026-04-29 11:40:00] infra: password hashing with BCrypt
 [2026-04-30 10:35:00] infra: initial EF migration, database seed
+[2026-04-30 13:15:00] api: Program.cs - DI, JWT middleware, CORS
