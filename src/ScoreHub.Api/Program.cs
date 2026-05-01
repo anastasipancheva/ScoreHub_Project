@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -15,7 +16,25 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "ScoreHub API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "ScoreHub API",
+        Version = "v1",
+        Description =
+            """
+            API для автоматизации МКН2: курсы, занятия, команды, КТ, уведомления, JWT.
+
+            **OpenAPI (Swagger) JSON:** после запуска приложения скачайте спецификацию по адресу `/swagger/v1/swagger.json` (относительно базового URL сервера).
+
+            **Авторизация:** нажмите «Authorize» и вставьте JWT (с префиксом `Bearer ` или без — зависит от клиента).
+            """
+    });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+        c.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT: paste the raw token, or use \"Bearer {token}\".",
@@ -69,11 +88,12 @@ var app = builder.Build();
 
 await app.MigrateAndSeedAsync();
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(o =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    o.SwaggerEndpoint("/swagger/v1/swagger.json", "ScoreHub v1");
+    o.DocumentTitle = "ScoreHub API";
+});
 
 app.UseHttpsRedirection();
 

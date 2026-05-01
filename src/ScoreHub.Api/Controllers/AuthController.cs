@@ -10,6 +10,7 @@ using ScoreHub.Infrastructure.Persistence;
 
 namespace ScoreHub.Api.Controllers;
 
+/// <summary>Регистрация, вход в систему и профиль текущего пользователя.</summary>
 [ApiController]
 [Route("api/auth")]
 public sealed class AuthController : ControllerBase
@@ -23,6 +24,8 @@ public sealed class AuthController : ControllerBase
         _jwt = jwt;
     }
 
+    /// <summary>Создать аккаунт студента (роль Student, пароль не короче 8 символов).</summary>
+    /// <remarks>Email приводится к нижнему регистру. Повторный email — 409.</remarks>
     [HttpPost("register")]
     [AllowAnonymous]
     public async Task<ActionResult<object>> Register([FromBody] RegisterDto dto, CancellationToken ct)
@@ -50,6 +53,7 @@ public sealed class AuthController : ControllerBase
         return StatusCode(StatusCodes.Status201Created, new { user.Id, user.Email, user.DisplayName });
     }
 
+    /// <summary>Вход по email и паролю; в ответе JWT и срок действия.</summary>
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginDto dto, CancellationToken ct)
@@ -64,6 +68,7 @@ public sealed class AuthController : ControllerBase
         return Ok(new LoginResponse(token.Token, token.ExpiresAtUtc, user.Id, user.Email, user.DisplayName, roles));
     }
 
+    /// <summary>Профиль текущего пользователя (нужен заголовок Authorization: Bearer …).</summary>
     [HttpGet("me")]
     [Authorize]
     public async Task<ActionResult<MeResponse>> Me(CancellationToken ct)

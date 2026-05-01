@@ -7,6 +7,7 @@ using ScoreHub.Infrastructure.Persistence;
 
 namespace ScoreHub.Api.Controllers;
 
+/// <summary>Администрирование пользователей (только роль Admin).</summary>
 [ApiController]
 [Route("api/admin")]
 [Authorize(Roles = AppRoles.Admin)]
@@ -19,6 +20,10 @@ public sealed class AdminController : ControllerBase
         _db = db;
     }
 
+    /// <summary>Назначить пользователю роль (Student, Assistant, Teacher, Admin).</summary>
+    /// <param name="userId">Идентификатор пользователя.</param>
+    /// <param name="dto">Имя роли в поле roleName.</param>
+    /// <param name="ct">Токен отмены.</param>
     [HttpPost("users/{userId:guid}/roles")]
     public async Task<IActionResult> SetRole(Guid userId, [FromBody] SetRoleDto dto, CancellationToken ct)
     {
@@ -36,5 +41,6 @@ public sealed class AdminController : ControllerBase
         return Ok(new { userId, role = role.ToString() });
     }
 
+    /// <summary>Тело: имя роли в поле roleName (Student, Assistant, Teacher, Admin).</summary>
     public sealed record SetRoleDto(string RoleName);
 }
