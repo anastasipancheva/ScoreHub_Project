@@ -54,8 +54,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj": {
-              "projectPath": "C:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj"
+            "c:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj": {
+              "projectPath": "c:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj"
             }
           }
         }

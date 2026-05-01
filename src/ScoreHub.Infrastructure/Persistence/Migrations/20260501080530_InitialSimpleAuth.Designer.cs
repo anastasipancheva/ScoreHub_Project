@@ -11,8 +11,8 @@ using ScoreHub.Infrastructure.Persistence;
 namespace ScoreHub.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ScoreHubDbContext))]
-    [Migration("20260426115702_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260501080530_InitialSimpleAuth")]
+    partial class InitialSimpleAuth
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -368,6 +368,10 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Role")
                         .HasColumnType("INTEGER");
 
@@ -403,21 +407,19 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ScoreHub.Domain.Entities.Notification", b =>
                 {
-                    b.HasOne("ScoreHub.Domain.Entities.User", "Recipient")
+                    b.HasOne("ScoreHub.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("RecipientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Recipient");
                 });
 
             modelBuilder.Entity("ScoreHub.Domain.Entities.TaskAssistant", b =>
                 {
-                    b.HasOne("ScoreHub.Domain.Entities.User", "Assistant")
+                    b.HasOne("ScoreHub.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("AssistantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ScoreHub.Domain.Entities.TaskItem", "TaskItem")
@@ -425,8 +427,6 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         .HasForeignKey("TaskItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Assistant");
 
                     b.Navigation("TaskItem");
                 });
@@ -461,13 +461,15 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ScoreHub.Domain.Entities.User", "Reviewer")
+                    b.HasOne("ScoreHub.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("ReviewerId");
+                        .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("ScoreHub.Domain.Entities.User", "Student")
+                    b.HasOne("ScoreHub.Domain.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("StudentId");
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("ScoreHub.Domain.Entities.TaskItem", "TaskItem")
                         .WithMany()
@@ -480,10 +482,6 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         .HasForeignKey("TeamId");
 
                     b.Navigation("Activity");
-
-                    b.Navigation("Reviewer");
-
-                    b.Navigation("Student");
 
                     b.Navigation("TaskItem");
 
@@ -503,10 +501,10 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ScoreHub.Domain.Entities.TeamAssistant", b =>
                 {
-                    b.HasOne("ScoreHub.Domain.Entities.User", "Assistant")
+                    b.HasOne("ScoreHub.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("AssistantId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ScoreHub.Domain.Entities.Team", "Team")
@@ -515,17 +513,15 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Assistant");
-
                     b.Navigation("Team");
                 });
 
             modelBuilder.Entity("ScoreHub.Domain.Entities.TeamHelpRequest", b =>
                 {
-                    b.HasOne("ScoreHub.Domain.Entities.User", "CreatedByUser")
+                    b.HasOne("ScoreHub.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("ScoreHub.Domain.Entities.Team", "Team")
@@ -533,8 +529,6 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CreatedByUser");
 
                     b.Navigation("Team");
                 });
@@ -547,15 +541,13 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ScoreHub.Domain.Entities.User", "User")
+                    b.HasOne("ScoreHub.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Team");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ScoreHub.Domain.Entities.Activity", b =>

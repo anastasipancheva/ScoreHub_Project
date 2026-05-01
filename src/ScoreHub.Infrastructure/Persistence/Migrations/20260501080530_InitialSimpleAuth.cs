@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ScoreHub.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialSimpleAuth : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,6 +33,7 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     Email = table.Column<string>(type: "TEXT", nullable: false),
                     DisplayName = table.Column<string>(type: "TEXT", nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
                     Role = table.Column<int>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false)
                 },
@@ -192,7 +193,7 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         column: x => x.AssistantId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -220,7 +221,7 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         column: x => x.CreatedByUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -246,7 +247,7 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -270,7 +271,7 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         column: x => x.AssistantId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -314,12 +315,14 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         name: "FK_TaskSubmissions_Users_ReviewerId",
                         column: x => x.ReviewerId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_TaskSubmissions_Users_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(

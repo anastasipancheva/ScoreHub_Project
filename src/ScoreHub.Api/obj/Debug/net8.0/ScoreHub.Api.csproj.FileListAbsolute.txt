@@ -5,7 +5,6 @@ C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\De
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\ScoreHub.Api.runtimeconfig.json
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\ScoreHub.Api.dll
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\ScoreHub.Api.pdb
-C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\Microsoft.Data.Sqlite.dll
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
@@ -138,3 +137,12 @@ C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\De
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\obj\Debug\net8.0\ScoreHub.Api.sourcelink.json
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Api\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll

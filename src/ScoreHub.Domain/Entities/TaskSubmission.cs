@@ -22,7 +22,6 @@ public sealed class TaskSubmission
 
     // Control point: individual submission
     public Guid? StudentId { get; set; }
-    public User? Student { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
@@ -35,7 +34,6 @@ public sealed class TaskSubmission
     public SubmissionStatus Status { get; set; } = SubmissionStatus.Draft;
 
     public Guid? ReviewerId { get; set; }
-    public User? Reviewer { get; set; }
 
     public DateTimeOffset? ReviewedAt { get; set; }
 

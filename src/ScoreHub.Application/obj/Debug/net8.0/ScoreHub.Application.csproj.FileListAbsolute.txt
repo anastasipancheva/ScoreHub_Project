@@ -13,3 +13,4 @@ C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Applicatio
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Application\obj\Debug\net8.0\refint\ScoreHub.Application.dll
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Application\obj\Debug\net8.0\ScoreHub.Application.pdb
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Application\obj\Debug\net8.0\ref\ScoreHub.Application.dll
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Application\obj\Debug\net8.0\ScoreHub.Application.sourcelink.json

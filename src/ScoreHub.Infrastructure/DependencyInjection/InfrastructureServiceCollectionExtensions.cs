@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ScoreHub.Application.Auth;
+using ScoreHub.Infrastructure.Auth;
 using ScoreHub.Infrastructure.Persistence;
 
 namespace ScoreHub.Infrastructure.DependencyInjection;
@@ -12,14 +14,13 @@ public static class InfrastructureServiceCollectionExtensions
         var connectionString = configuration.GetConnectionString("ScoreHub");
 
         if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            // Dev default: local SQLite file.
             connectionString = "Data Source=scorehub.dev.db";
-        }
 
         services.AddDbContext<ScoreHubDbContext>(opts => opts.UseSqlite(connectionString));
+
+        services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
+        services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
         return services;
     }
 }
-

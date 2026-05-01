@@ -29,8 +29,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj": {
-                "projectPath": "C:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj"
+              "c:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj": {
+                "projectPath": "c:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj"
               }
             }
           }
@@ -69,14 +69,14 @@
         }
       }
     },
-    "C:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj": {
+    "c:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj",
+        "projectUniqueName": "c:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj",
         "projectName": "ScoreHub.Domain",
-        "projectPath": "C:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj",
+        "projectPath": "c:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\ScoreHub.Domain.csproj",
         "packagesPath": "C:\\Users\\salok\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\obj\\",
+        "outputPath": "c:\\Users\\salok\\OneDrive\\Рабочий стол\\scorehub\\src\\ScoreHub.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\salok\\AppData\\Roaming\\NuGet\\NuGet.Config",

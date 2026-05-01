@@ -9,3 +9,4 @@ C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Domain\obj
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Domain\obj\Debug\net8.0\refint\ScoreHub.Domain.dll
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Domain\obj\Debug\net8.0\ScoreHub.Domain.pdb
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Domain\obj\Debug\net8.0\ref\ScoreHub.Domain.dll
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Domain\obj\Debug\net8.0\ScoreHub.Domain.sourcelink.json

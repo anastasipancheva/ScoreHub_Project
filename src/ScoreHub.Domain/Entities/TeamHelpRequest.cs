@@ -10,7 +10,6 @@ public sealed class TeamHelpRequest
     public Team Team { get; set; } = null!;
 
     public Guid CreatedByUserId { get; set; }
-    public User CreatedByUser { get; set; } = null!;
 
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public TeamHelpRequestStatus Status { get; set; } = TeamHelpRequestStatus.Open;

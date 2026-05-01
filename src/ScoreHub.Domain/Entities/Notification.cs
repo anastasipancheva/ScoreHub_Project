@@ -5,7 +5,6 @@ public sealed class Notification
     public Guid Id { get; set; }
 
     public Guid RecipientId { get; set; }
-    public User Recipient { get; set; } = null!;
 
     public string Type { get; set; } = null!; // e.g. "TeamHelpRequested", "ReadyToDefend"
     public string Title { get; set; } = null!;

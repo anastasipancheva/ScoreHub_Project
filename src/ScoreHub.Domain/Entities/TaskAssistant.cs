@@ -9,6 +9,5 @@ public sealed class TaskAssistant
     public TaskItem TaskItem { get; set; } = null!;
 
     public Guid AssistantId { get; set; }
-    public User Assistant { get; set; } = null!;
 }
 

@@ -46,6 +46,47 @@ public sealed class ScoreHubDbContext : DbContext
 
         modelBuilder.Entity<TaskSubmission>()
             .HasIndex(x => new { x.ActivityId, x.TaskItemId, x.TeamId, x.StudentId });
+
+        modelBuilder.Entity<TeamMember>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TeamAssistant>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.AssistantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TaskAssistant>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.AssistantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TeamHelpRequest>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.CreatedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Notification>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.RecipientId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TaskSubmission>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.StudentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<TaskSubmission>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.ReviewerId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
-

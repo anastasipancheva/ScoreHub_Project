@@ -17,3 +17,4 @@ C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Infrastruc
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Infrastructure\obj\Debug\net8.0\ScoreHub.Infrastructure.pdb
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Infrastructure\obj\Debug\net8.0\ScoreHub.Infrastructure.genruntimeconfig.cache
 C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Infrastructure\obj\Debug\net8.0\ref\ScoreHub.Infrastructure.dll
+C:\Users\salok\OneDrive\Рабочий стол\scorehub\src\ScoreHub.Infrastructure\obj\Debug\net8.0\ScoreHub.Infrastructure.sourcelink.json

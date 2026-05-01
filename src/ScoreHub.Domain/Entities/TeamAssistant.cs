@@ -6,6 +6,5 @@ public sealed class TeamAssistant
     public Team Team { get; set; } = null!;
 
     public Guid AssistantId { get; set; }
-    public User Assistant { get; set; } = null!;
 }
 
