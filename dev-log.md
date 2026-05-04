@@ -8,3 +8,4 @@
 [2026-04-29 14:00:00] frontend: dashboard page skeleton
 [2026-04-29 16:30:00] frontend: models.ts - TypeScript interfaces for API
 [2026-04-30 15:50:00] frontend: api.service.ts base HTTP layer
+[2026-05-04 14:20:00] frontend: courses list page
