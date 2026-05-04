@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ScoreHub.Application.Abstractions;
 using ScoreHub.Domain.Auth;
+using ScoreHub.Domain.Entities;
+using ScoreHub.Domain.Enums;
+using ScoreHub.Infrastructure.Persistence;
 
 namespace ScoreHub.Api.Controllers;
 
@@ -13,10 +17,12 @@ namespace ScoreHub.Api.Controllers;
 public sealed class ControlPointController : ApiControllerBase
 {
     private readonly IControlPointService _kt;
+    private readonly ScoreHubDbContext _db;
 
-    public ControlPointController(IControlPointService kt)
+    public ControlPointController(IControlPointService kt, ScoreHubDbContext db)
     {
         _kt = kt;
+        _db = db;
     }
 
     /// <summary>Студент отмечает готовность сдать конкретную задачу КТ (фиксируется время для очереди).</summary>
@@ -84,5 +90,77 @@ public sealed class ControlPointController : ApiControllerBase
         return r.IsOk ? Ok() : BadRequest(new { error = r.Error });
     }
 
+    /// <summary>Студент покидает очередь по задаче (снимает готовность).</summary>
+    [HttpDelete("tasks/{taskItemId:guid}/ready")]
+    public async Task<IActionResult> UnmarkReady(Guid activityId, Guid taskItemId, CancellationToken ct)
+    {
+        var uid = CurrentUserId;
+        if (uid is null) return Unauthorized();
+
+        var sub = await _db.TaskSubmissions
+            .FirstOrDefaultAsync(s => s.ActivityId == activityId
+                && s.TaskItemId == taskItemId
+                && s.StudentId == uid.Value
+                && s.Status == SubmissionStatus.ReadyForReview, ct);
+
+        if (sub is null) return NotFound();
+        _db.TaskSubmissions.Remove(sub);
+        await _db.SaveChangesAsync(ct);
+        return Ok();
+    }
+
+    /// <summary>Студент сохраняет ссылку на решение (Google Drive).</summary>
+    [HttpPatch("tasks/{taskItemId:guid}/solution")]
+    public async Task<IActionResult> SetSolution(Guid activityId, Guid taskItemId, [FromBody] SolutionDto dto, CancellationToken ct)
+    {
+        var uid = CurrentUserId;
+        if (uid is null) return Unauthorized();
+
+        var sub = await _db.TaskSubmissions
+            .FirstOrDefaultAsync(s => s.ActivityId == activityId
+                && s.TaskItemId == taskItemId
+                && s.StudentId == uid.Value, ct);
+
+        if (sub is null)
+        {
+            sub = new TaskSubmission {
+                Id = Guid.NewGuid(),
+                ActivityId = activityId,
+                TaskItemId = taskItemId,
+                StudentId = uid.Value,
+                SolutionUrl = dto.Url,
+                Status = SubmissionStatus.Draft
+            };
+            _db.TaskSubmissions.Add(sub);
+        }
+        else
+        {
+            sub.SolutionUrl = dto.Url;
+        }
+        await _db.SaveChangesAsync(ct);
+        return Ok();
+    }
+
+    /// <summary>Ассистент просматривает решения студентов по задаче.</summary>
+    [HttpGet("tasks/{taskItemId:guid}/submissions")]
+    [Authorize(Roles = $"{AppRoles.Assistant},{AppRoles.Teacher},{AppRoles.Admin}")]
+    public async Task<IActionResult> GetSubmissions(Guid activityId, Guid taskItemId, CancellationToken ct)
+    {
+        var subs = await _db.TaskSubmissions
+            .AsNoTracking()
+            .Where(s => s.ActivityId == activityId && s.TaskItemId == taskItemId && s.StudentId != null)
+            .Select(s => new {
+                s.Id,
+                s.StudentId,
+                s.SolutionUrl,
+                s.Status,
+                s.ReadyAt,
+                s.Result01
+            })
+            .ToListAsync(ct);
+        return Ok(subs);
+    }
+
     public sealed record KtCompleteDto(bool Accepted, int Result01, decimal? DefenderCoefficient);
+    public sealed record SolutionDto(string Url);
 }

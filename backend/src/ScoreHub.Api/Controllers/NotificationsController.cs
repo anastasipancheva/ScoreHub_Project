@@ -28,7 +28,7 @@ public sealed class NotificationsController : ApiControllerBase
         var items = await _db.Notifications
             .AsNoTracking()
             .Where(n => n.RecipientId == uid.Value)
-            .OrderByDescending(n => n.CreatedAt)
+            .OrderByDescending(n => n.CreatedAt.Ticks)
             .Take(100)
             .Select(n => new
             {

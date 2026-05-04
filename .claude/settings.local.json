@@ -37,7 +37,13 @@
       "Bash(sqlite3 scorehub.dev.db \"SELECT Email, Role FROM Users;\")",
       "Bash(curl -s -X POST http://localhost:5062/api/auth/dev/set-role -H 'Content-Type: application/json' -d '{\"email\":\"assistant@test.com\",\"role\":2}')",
       "Bash(curl -s -X POST http://localhost:5062/api/auth/dev/set-role -H 'Content-Type: application/json' -d '{\"email\":\"teacher@test.com\",\"role\":3}')",
-      "Bash(curl -s -X POST http://localhost:5062/api/auth/dev/set-role -H 'Content-Type: application/json' -d '{\"email\":\"admin@test.com\",\"role\":4}')"
+      "Bash(curl -s -X POST http://localhost:5062/api/auth/dev/set-role -H 'Content-Type: application/json' -d '{\"email\":\"admin@test.com\",\"role\":4}')",
+      "Bash(curl -s -X POST http://localhost:5062/api/auth/login -H 'Content-Type: application/json' -d '{\"email\":\"teacher@test.com\",\"password\":\"Teacher1234\"}')",
+      "Bash(xargs grep *)",
+      "Bash(grep -v \"^$\")",
+      "Bash(dir \"C:\\\\Users\\\\User\\\\Desktop\\\\ScoreHub_Projec\\\\backend\\\\src\\\\ScoreHub.Infrastructure\\\\Migrations\")",
+      "Bash(curl -s -X POST http://localhost:5062/api/auth/register -H 'Content-Type: application/json' -d '{\"email\":\"student@test.com\",\"password\":\"Student1234\",\"displayName\":\"Student Ivanov\"}')",
+      "Bash(python -c ' *)"
     ]
   }
 }

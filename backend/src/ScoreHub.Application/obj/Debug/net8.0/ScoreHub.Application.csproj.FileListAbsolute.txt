@@ -29,3 +29,4 @@ C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Application\obj\Debug
 C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Application\obj\Debug\net8.0\refint\ScoreHub.Application.dll
 C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Application\obj\Debug\net8.0\ScoreHub.Application.pdb
 C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Application\obj\Debug\net8.0\ref\ScoreHub.Application.dll
+C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Application\obj\Debug\net8.0\ScoreHub.Application.sourcelink.json

@@ -39,6 +39,10 @@ public sealed class ScoreHubDbContext : DbContext
 
     public DbSet<Notification> Notifications => Set<Notification>();
 
+    public DbSet<CourseEnrollment> CourseEnrollments => Set<CourseEnrollment>();
+
+    public DbSet<AssistantApplication> AssistantApplications => Set<AssistantApplication>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -141,5 +145,28 @@ public sealed class ScoreHubDbContext : DbContext
         modelBuilder.Entity<TeamSwapLog>()
             .HasOne<User>().WithMany()
             .HasForeignKey(x => x.StudentBId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<CourseEnrollment>()
+            .HasKey(x => new { x.CourseId, x.UserId });
+
+        modelBuilder.Entity<CourseEnrollment>()
+            .HasOne(x => x.User).WithMany()
+            .HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<CourseEnrollment>()
+            .HasOne(x => x.Course).WithMany()
+            .HasForeignKey(x => x.CourseId).OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<AssistantApplication>()
+            .HasIndex(x => new { x.ActivityId, x.AssistantId })
+            .IsUnique();
+
+        modelBuilder.Entity<AssistantApplication>()
+            .HasOne(x => x.Assistant).WithMany()
+            .HasForeignKey(x => x.AssistantId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<AssistantApplication>()
+            .HasOne(x => x.Activity).WithMany()
+            .HasForeignKey(x => x.ActivityId).OnDelete(DeleteBehavior.Cascade);
     }
 }

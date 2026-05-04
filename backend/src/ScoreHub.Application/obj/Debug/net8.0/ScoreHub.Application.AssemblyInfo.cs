@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ScoreHub.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0997d2f34c718129cff12c5cfc00e4374f12d3bc")]
 [assembly: System.Reflection.AssemblyProductAttribute("ScoreHub.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ScoreHub.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

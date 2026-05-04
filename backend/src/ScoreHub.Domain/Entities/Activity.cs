@@ -14,6 +14,8 @@ public sealed class Activity
 
     public ActivityType Type { get; set; }
 
+    public ActivityStatus Status { get; set; } = ActivityStatus.Scheduled;
+
     public string Title { get; set; } = null!;
     public DateTimeOffset StartsAt { get; set; }
     public DateTimeOffset EndsAt { get; set; }

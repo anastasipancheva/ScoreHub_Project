@@ -1,96 +1,111 @@
 "use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { studentApi, StudentActivity, courses, Course } from "@/lib/api";
 import Link from "next/link";
-import { Star, Bell, Users, UserCog, BookOpen, ClipboardList } from "lucide-react";
+import { BookOpen, ClipboardList, Bell, Star, ChevronRight, Zap } from "lucide-react";
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const role = user?.role ?? "";
-  const isAssistant = role === "Assistant" || role === "Teacher" || role === "Admin";
-  const isTeacher = role === "Teacher" || role === "Admin";
 
-  const cards = [
-    {
-      title: "Мои баллы",
-      description: "Итоги по модулям и финальная оценка",
-      href: "/scores",
-      icon: Star,
-      color: "#005BFF",
-      show: true,
-    },
-    {
-      title: "Уведомления",
-      description: "Вызовы ассистента, результаты сдач, КТ",
-      href: "/notifications",
-      icon: Bell,
-      color: "#7C3AED",
-      show: true,
-    },
-    {
-      title: "Домашние задания",
-      description: "Сдать решение в Google Docs",
-      href: "/homework",
-      icon: BookOpen,
-      color: "#059669",
-      show: true,
-    },
-    {
-      title: "Панель ассистента",
-      description: "Очереди вызовов и сдач на паре",
-      href: "/assistant",
-      icon: Users,
-      color: "#D97706",
-      show: isAssistant,
-    },
-    {
-      title: "Управление",
-      description: "Курсы, занятия, команды, баллы",
-      href: "/admin",
-      icon: UserCog,
-      color: "#DC2626",
-      show: isTeacher,
-    },
-    {
-      title: "Контрольные точки",
-      description: "Задания для КТ и очередь сдачи",
-      href: "/kt",
-      icon: ClipboardList,
-      color: "#0891B2",
-      show: true,
-    },
-  ];
+  const [activities, setActivities] = useState<StudentActivity[]>([]);
+  const [courseList, setCourseList] = useState<Course[]>([]);
+
+  useEffect(() => {
+    if (role === "Teacher" || role === "Admin") {
+      router.replace("/admin");
+      return;
+    }
+    studentApi.myActivities().then(setActivities).catch(() => {});
+    courses.list().then(setCourseList).catch(() => {});
+  }, [role, router]);
+
+  const active = activities.filter(a => a.status === "Active");
+  const upcoming = activities.filter(a => a.status === "Scheduled").slice(0, 5);
+
+  const activityHref = (a: StudentActivity) =>
+    a.type === 1 ? `/kt/${a.id}` : `/lecture/${a.id}`;
 
   return (
-    <div className="space-y-6">
-      <div className="bg-[#EAF2FF] rounded-xl px-6 py-5 border border-[#C7DCFF]">
+    <div className="space-y-6 max-w-3xl">
+      <div className="bg-[#EAF2FF] rounded-xl border border-[#C7DCFF] px-6 py-5">
         <p className="text-sm text-[#005BFF] font-medium mb-0.5">Добро пожаловать</p>
         <h1 className="text-xl font-semibold text-[#1A1A1B]">{user?.displayName}</h1>
         <p className="text-sm text-[#6B7280] mt-0.5">
-          {role === "Student" && "Студент"}
-          {role === "Assistant" && "Ассистент"}
-          {role === "Teacher" && "Преподаватель"}
-          {role === "Admin" && "Администратор"}
+          {role === "Assistant" ? "Ассистент" : "Студент"}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {cards.filter((c) => c.show).map((card) => (
-          <Link key={card.href} href={card.href}>
-            <div className="bg-white rounded-xl border border-[#E5E7EB] p-5 hover:border-[#005BFF]/30 hover:shadow-sm transition-all cursor-pointer group">
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
-                style={{ backgroundColor: card.color + "15" }}
-              >
-                <card.icon size={18} style={{ color: card.color }} />
+      {/* Active activities */}
+      {active.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide flex items-center gap-1.5">
+            <Zap size={12} className="text-[#005BFF]" /> Сейчас идёт
+          </p>
+          {active.map(a => (
+            <Link key={a.id} href={activityHref(a)}>
+              <div className="bg-white rounded-xl border-2 border-[#005BFF]/20 p-4 flex items-center justify-between hover:border-[#005BFF]/40 transition-colors">
+                <div>
+                  <p className="text-sm font-semibold text-[#1A1A1B]">{a.title}</p>
+                  <p className="text-xs text-[#6B7280]">{a.courseCode} · {a.typeLabel}</p>
+                </div>
+                <span className="flex items-center gap-1 text-xs font-medium text-[#005BFF] bg-[#EAF2FF] px-3 py-1.5 rounded-lg">
+                  Перейти <ChevronRight size={12} />
+                </span>
               </div>
-              <h2 className="text-sm font-semibold text-[#1A1A1B] group-hover:text-[#005BFF] transition-colors">
-                {card.title}
-              </h2>
-              <p className="text-xs text-[#6B7280] mt-1 leading-relaxed">{card.description}</p>
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {/* Upcoming */}
+      {upcoming.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">Предстоящие занятия</p>
+          {upcoming.map(a => (
+            <div key={a.id} className="bg-white rounded-xl border border-[#E5E7EB] p-4 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-[#1A1A1B]">{a.title}</p>
+                <p className="text-xs text-[#6B7280]">
+                  {a.courseCode} · {a.typeLabel} · {new Date(a.startsAt).toLocaleDateString("ru", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                </p>
+              </div>
+              <span className="text-xs text-[#9CA3AF] bg-[#F3F4F6] px-2 py-1 rounded-md">Запланировано</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Quick links */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {[
+          { href: "/scores", icon: Star, label: "Мои баллы", color: "#005BFF", show: role !== "Assistant" },
+          { href: "/notifications", icon: Bell, label: "Уведомления", color: "#7C3AED", show: true },
+          { href: "/homework", icon: BookOpen, label: "Домашние задания", color: "#059669", show: role !== "Assistant" },
+          { href: "/courses", icon: ClipboardList, label: "Мои курсы", color: "#D97706", show: true },
+        ].filter(x => x.show).map(item => (
+          <Link key={item.href} href={item.href}>
+            <div className="bg-white rounded-xl border border-[#E5E7EB] p-4 hover:border-[#005BFF]/30 transition-all group">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-2" style={{ backgroundColor: item.color + "15" }}>
+                <item.icon size={16} style={{ color: item.color }} />
+              </div>
+              <p className="text-sm font-medium text-[#1A1A1B] group-hover:text-[#005BFF] transition-colors">{item.label}</p>
             </div>
           </Link>
         ))}
       </div>
+
+      {active.length === 0 && upcoming.length === 0 && courseList.length === 0 && role === "Student" && (
+        <div className="bg-white rounded-xl border border-[#E5E7EB] p-8 text-center">
+          <p className="text-sm text-[#6B7280] mb-3">Вы ещё не записаны ни на один курс</p>
+          <Link href="/courses" className="inline-flex items-center gap-1.5 text-sm text-[#005BFF] font-medium hover:underline">
+            Перейти к списку курсов <ChevronRight size={14} />
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

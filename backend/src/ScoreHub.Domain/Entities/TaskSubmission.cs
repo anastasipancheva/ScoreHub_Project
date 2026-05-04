@@ -50,5 +50,8 @@ public sealed class TaskSubmission
     /// Optional coefficient for defenders (individual multiplier).
     /// </summary>
     public decimal? DefenderCoefficient { get; set; }
+
+    /// <summary>Google Drive or other solution URL submitted by student.</summary>
+    public string? SolutionUrl { get; set; }
 }
 

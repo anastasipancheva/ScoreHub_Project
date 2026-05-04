@@ -62,6 +62,10 @@ export const courses = {
     get<StudentScore>(`/api/courses/${courseId}/students/${studentId}/score`),
   patchGrading: (courseId: string, body: { ktMultiplierMapJson?: string; finalGradingTableJson?: string }) =>
     patch(`/api/teaching/courses/${courseId}/grading-config`, body),
+  students: (courseId: string) =>
+    get<{ id: string; email: string; displayName: string; role: string; enrolledAt: string }[]>(`/api/courses/${courseId}/students`),
+  enroll: (courseId: string) => post(`/api/courses/${courseId}/enroll`),
+  structure: (courseId: string) => get<CourseStructure>(`/api/teaching/courses/${courseId}/structure`),
 };
 
 // ── Activities ───────────────────────────────────────────────────────────────
@@ -148,6 +152,13 @@ export const notifications = {
   markRead: (id: string) => post(`/api/notifications/${id}/read`),
 };
 
+// ── Admin ─────────────────────────────────────────────────────────────────────
+export const admin = {
+  listUsers: () => get<{ id: string; email: string; displayName: string; role: string }[]>("/api/admin/users"),
+  setUserRole: (userId: string, roleName: string) =>
+    post(`/api/admin/users/${userId}/roles`, { roleName }),
+};
+
 // ── Teaching setup ────────────────────────────────────────────────────────────
 export const teaching = {
   createCourse: (code: string, title: string, academicYear: string) =>
@@ -178,6 +189,43 @@ export const teaching = {
     post(`/api/teaching/activities/${activityId}/teams/${teamId}/members/${studentId}/absent`, { isAbsent }),
   setUserRole: (userId: string, roleName: string) =>
     post(`/api/admin/users/${userId}/roles`, { roleName }),
+};
+
+// ── Student activities ────────────────────────────────────────────────────────
+export const studentApi = {
+  myActivities: () => get<StudentActivity[]>("/api/student/activities"),
+  enroll: (courseId: string) => post(`/api/student/courses/${courseId}/enroll`),
+};
+
+// ── Assistant applications ────────────────────────────────────────────────────
+export const assistantApps = {
+  list: (activityId: string) => get<AssistantApplicationDto[]>(`/api/activities/${activityId}/assistant-applications`),
+  apply: (activityId: string, message?: string) =>
+    post(`/api/activities/${activityId}/assistant-applications`, { message: message ?? null }),
+  review: (activityId: string, appId: string, approved: boolean) =>
+    put(`/api/activities/${activityId}/assistant-applications/${appId}/review`, { approved }),
+};
+
+// ── KT enhancements ───────────────────────────────────────────────────────────
+export const ktApi = {
+  ...kt,
+  unmarkReady: (activityId: string, taskItemId: string) =>
+    del(`/api/activities/${activityId}/kt/tasks/${taskItemId}/ready`),
+  setSolution: (activityId: string, taskItemId: string, url: string) =>
+    patch(`/api/activities/${activityId}/kt/tasks/${taskItemId}/solution`, { url }),
+  getSubmissions: (activityId: string, taskItemId: string) =>
+    get<KtStudentSubmission[]>(`/api/activities/${activityId}/kt/tasks/${taskItemId}/submissions`),
+};
+
+// ── Teaching enhancements ─────────────────────────────────────────────────────
+export const teachingApi = {
+  ...teaching,
+  startActivity: (activityId: string) => post(`/api/teaching/activities/${activityId}/start`),
+  finishActivity: (activityId: string) => post(`/api/teaching/activities/${activityId}/finish`),
+  enrollBulk: (courseId: string, emails: string[]) =>
+    post<{ added: number; notFound: number }>(`/api/teaching/courses/${courseId}/enroll-bulk`, { emails }),
+  getCourseActivities: (courseId: string) =>
+    get<TeacherActivity[]>(`/api/teaching/courses/${courseId}/activities`),
 };
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -254,10 +302,95 @@ export interface Notification {
   readAt?: string;
 }
 
+export interface CourseTask {
+  id: string;
+  code: string;
+  title: string;
+  points: number;
+}
+
+export interface CourseTaskSet {
+  id: string;
+  title: string;
+  published: boolean;
+  tasks: CourseTask[];
+}
+
+export interface CourseActivity {
+  id: string;
+  title: string;
+  type: string;
+  startsAt: string;
+  endsAt: string;
+  taskSets: CourseTaskSet[];
+}
+
+export interface CourseModule {
+  id: string;
+  number: number;
+  title: string;
+  startsAt: string;
+  endsAt: string;
+  activities: CourseActivity[];
+}
+
+export interface CourseStructure {
+  id: string;
+  code: string;
+  title: string;
+  academicYear: string;
+  modules: CourseModule[];
+}
+
 export interface StudentScore {
   studentId: string;
   displayName: string;
   modules: { moduleNumber: number; lecturePoints: number; homeworkPoints: number; ktMultiplier: number; moduleScore: number }[];
   finalScore: number;
   mark: string;
+}
+
+export interface StudentActivity {
+  id: string;
+  title: string;
+  type: number;
+  typeLabel: string;
+  status: string;
+  startsAt: string;
+  endsAt: string;
+  courseCode: string;
+  courseTitle: string;
+  moduleTitle: string;
+}
+
+export interface AssistantApplicationDto {
+  id: string;
+  assistantId: string;
+  assistantName: string;
+  assistantEmail: string;
+  status: string;
+  message?: string;
+  appliedAt: string;
+  reviewedAt?: string;
+}
+
+export interface TeacherActivity {
+  id: string;
+  title: string;
+  type: number;
+  typeLabel: string;
+  status: string;
+  startsAt: string;
+  endsAt: string;
+  moduleTitle: string;
+  moduleNumber: number;
+}
+
+export interface KtStudentSubmission {
+  id: string;
+  studentId: string;
+  solutionUrl?: string;
+  status: string;
+  readyAt?: string;
+  result01?: number;
 }

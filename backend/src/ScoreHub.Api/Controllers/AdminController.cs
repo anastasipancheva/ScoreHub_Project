@@ -20,6 +20,18 @@ public sealed class AdminController : ControllerBase
         _db = db;
     }
 
+    /// <summary>Список всех пользователей (id, email, displayName, role).</summary>
+    [HttpGet("users")]
+    public async Task<IActionResult> ListUsers(CancellationToken ct)
+    {
+        var users = await _db.Users
+            .AsNoTracking()
+            .OrderBy(u => u.DisplayName)
+            .Select(u => new { u.Id, u.Email, u.DisplayName, Role = u.Role.ToString() })
+            .ToListAsync(ct);
+        return Ok(users);
+    }
+
     /// <summary>Назначить пользователю роль (Student, Assistant, Teacher, Admin).</summary>
     /// <param name="userId">Идентификатор пользователя.</param>
     /// <param name="dto">Имя роли в поле roleName.</param>

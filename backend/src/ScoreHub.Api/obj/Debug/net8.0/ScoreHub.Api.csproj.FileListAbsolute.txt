@@ -297,3 +297,4 @@ C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Api\obj\Debug\net8.0\
 C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Api\obj\Debug\net8.0\ScoreHub.Api.pdb
 C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Api\obj\Debug\net8.0\ScoreHub.Api.genruntimeconfig.cache
 C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Api\obj\Debug\net8.0\ref\ScoreHub.Api.dll
+C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Api\obj\Debug\net8.0\ScoreHub.Api.sourcelink.json

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 
@@ -74,6 +75,13 @@ export default function LoginPage() {
             </button>
           </form>
         </div>
+
+        <p className="text-center text-sm text-[#6B7280] mt-4">
+          Нет аккаунта?{" "}
+          <Link href="/register" className="text-[#005BFF] hover:underline font-medium">
+            Зарегистрироваться
+          </Link>
+        </p>
       </div>
     </div>
   );

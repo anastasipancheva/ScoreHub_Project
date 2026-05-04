@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useSignalR, NotificationPayload } from "@/hooks/useSignalR";
 import { toast } from "sonner";
-import { Bell, LogOut, LayoutDashboard, Star, UserCog, Users } from "lucide-react";
+import { Bell, LogOut, LayoutDashboard, Star, UserCog, Users, BookOpen } from "lucide-react";
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
@@ -21,17 +21,22 @@ export default function AppShell({ children }: { children: ReactNode }) {
   useSignalR(handleNotification);
 
   const role = user?.role ?? "";
-  const isAssistant = role === "Assistant" || role === "Teacher" || role === "Admin";
   const isTeacher = role === "Teacher" || role === "Admin";
+  const isAssistant = role === "Assistant";
+  const isStudent = role === "Student";
 
   function handleLogout() {
     logout();
     router.replace("/login");
   }
 
+  // Role-specific nav: Teacher/Admin only see Управление
+  // Student sees Главная, Баллы, Курсы
+  // Assistant sees Главная, Ассистент
   const navItems = [
-    { href: "/", label: "Главная", icon: LayoutDashboard, show: true },
-    { href: "/scores", label: "Баллы", icon: Star, show: true },
+    { href: "/", label: "Главная", icon: LayoutDashboard, show: isStudent || isAssistant },
+    { href: "/scores", label: "Баллы", icon: Star, show: isStudent },
+    { href: "/courses", label: "Курсы", icon: BookOpen, show: isStudent },
     { href: "/assistant", label: "Ассистент", icon: Users, show: isAssistant },
     { href: "/admin", label: "Управление", icon: UserCog, show: isTeacher },
   ];

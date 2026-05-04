@@ -50,6 +50,9 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("StartsAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -77,6 +80,41 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                     b.HasIndex("AssistantId");
 
                     b.ToTable("ActivityAssistants");
+                });
+
+            modelBuilder.Entity("ScoreHub.Domain.Entities.AssistantApplication", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ActivityId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("AppliedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("AssistantId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("ReviewedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssistantId");
+
+                    b.HasIndex("ActivityId", "AssistantId")
+                        .IsUnique();
+
+                    b.ToTable("AssistantApplications");
                 });
 
             modelBuilder.Entity("ScoreHub.Domain.Entities.Course", b =>
@@ -111,6 +149,24 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("ScoreHub.Domain.Entities.CourseEnrollment", b =>
+                {
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("EnrolledAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CourseId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CourseEnrollments");
                 });
 
             modelBuilder.Entity("ScoreHub.Domain.Entities.HomeworkSubmission", b =>
@@ -442,6 +498,9 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("ReviewerId")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("SolutionUrl")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
@@ -690,6 +749,44 @@ namespace ScoreHub.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Activity");
+                });
+
+            modelBuilder.Entity("ScoreHub.Domain.Entities.AssistantApplication", b =>
+                {
+                    b.HasOne("ScoreHub.Domain.Entities.Activity", "Activity")
+                        .WithMany()
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ScoreHub.Domain.Entities.User", "Assistant")
+                        .WithMany()
+                        .HasForeignKey("AssistantId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("Assistant");
+                });
+
+            modelBuilder.Entity("ScoreHub.Domain.Entities.CourseEnrollment", b =>
+                {
+                    b.HasOne("ScoreHub.Domain.Entities.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ScoreHub.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ScoreHub.Domain.Entities.HomeworkSubmission", b =>

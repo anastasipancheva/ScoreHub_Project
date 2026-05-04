@@ -37,3 +37,4 @@ C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Infrastructure\obj\De
 C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Infrastructure\obj\Debug\net8.0\ScoreHub.Infrastructure.pdb
 C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Infrastructure\obj\Debug\net8.0\ScoreHub.Infrastructure.genruntimeconfig.cache
 C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Infrastructure\obj\Debug\net8.0\ref\ScoreHub.Infrastructure.dll
+C:\Users\User\Desktop\ScoreHub_Projec\backend\src\ScoreHub.Infrastructure\obj\Debug\net8.0\ScoreHub.Infrastructure.sourcelink.json

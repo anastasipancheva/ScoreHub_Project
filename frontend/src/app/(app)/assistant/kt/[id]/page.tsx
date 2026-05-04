@@ -2,15 +2,10 @@
 import { use, useEffect, useState, useCallback } from "react";
 import { kt, KtQueueEntry } from "@/lib/api";
 import { useSignalR } from "@/hooks/useSignalR";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
 interface PageProps { params: Promise<{ id: string }> }
 
-// In real usage task IDs come from the activity's task-sets.
-// This page accepts a taskItemId via query param: /assistant/kt/[activityId]?task=<taskItemId>
 export default function AssistantKtPage({ params }: PageProps) {
   const { id: activityId } = use(params);
   const [taskItemId, setTaskItemId] = useState("");
@@ -48,54 +43,93 @@ export default function AssistantKtPage({ params }: PageProps) {
     }
   }
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-xl font-bold">КТ — панель ассистента</h1>
+  const statusStyle: Record<string, string> = {
+    ReadyForReview: "bg-[#FEF3C7] text-[#D97706]",
+    InReview: "bg-[#EAF2FF] text-[#005BFF]",
+    Accepted: "bg-[#D1FAE5] text-[#059669]",
+    Rejected: "bg-[#FEE2E2] text-[#DC2626]",
+  };
 
-      <div className="flex gap-2 items-center">
-        <input
-          className="border rounded px-2 py-1 text-sm flex-1 max-w-xs"
-          placeholder="Task Item ID"
-          value={taskItemId}
-          onChange={(e) => setTaskItemId(e.target.value)}
-        />
-        <Button size="sm" variant="outline" onClick={reload}>Загрузить очередь</Button>
-        <Button size="sm" onClick={callNext} disabled={!taskItemId}>Вызвать следующего</Button>
+  return (
+    <div className="space-y-5">
+      <h1 className="text-lg font-semibold text-[#1A1A1B]">КТ — панель ассистента</h1>
+
+      {/* Task selector */}
+      <div className="bg-white rounded-xl border border-[#E5E7EB] p-5">
+        <p className="text-sm font-semibold text-[#1A1A1B] mb-3">Задача</p>
+        <div className="flex gap-2 items-center flex-wrap">
+          <input
+            className="h-10 px-3 rounded-lg border border-[#E5E7EB] text-sm outline-none focus:border-[#005BFF] focus:ring-2 focus:ring-[#005BFF]/10 transition flex-1 max-w-xs"
+            placeholder="Task Item ID (UUID)"
+            value={taskItemId}
+            onChange={(e) => setTaskItemId(e.target.value)}
+          />
+          <button
+            onClick={reload}
+            className="h-10 px-4 rounded-lg border border-[#E5E7EB] text-sm text-[#6B7280] font-medium hover:border-[#005BFF] hover:text-[#005BFF] transition-colors"
+          >
+            Загрузить очередь
+          </button>
+          <button
+            onClick={callNext}
+            disabled={!taskItemId}
+            className="h-10 px-5 rounded-lg bg-[#005BFF] text-white text-sm font-medium hover:bg-[#0050E6] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Вызвать следующего
+          </button>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            Очередь
-            {queue.length > 0 && <Badge>{queue.length}</Badge>}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {queue.length === 0 && <p className="text-sm text-muted-foreground">Очередь пуста</p>}
+      {/* Queue */}
+      <div className="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
+        <div className="px-5 py-4 border-b border-[#E5E7EB] flex items-center gap-2">
+          <span className="text-sm font-semibold text-[#1A1A1B]">Очередь</span>
+          {queue.length > 0 && (
+            <span className="h-5 min-w-5 px-1.5 rounded-full bg-[#EAF2FF] text-[#005BFF] text-xs font-bold flex items-center justify-center">
+              {queue.length}
+            </span>
+          )}
+        </div>
+        <div className="divide-y divide-[#F3F4F6]">
+          {queue.length === 0 && (
+            <p className="px-5 py-4 text-sm text-[#9CA3AF]">Очередь пуста</p>
+          )}
           {queue.map((entry, i) => (
-            <div key={entry.submissionId} className="flex items-center justify-between py-1">
+            <div key={entry.submissionId} className="flex items-center justify-between px-5 py-3">
               <div>
-                <span className="text-sm font-medium mr-2">#{i + 1}</span>
-                <span className="text-sm">{entry.studentEmail}</span>
+                <span className="text-sm font-medium text-[#9CA3AF] mr-2">#{i + 1}</span>
+                <span className="text-sm font-medium text-[#1A1A1B]">{entry.studentEmail}</span>
                 {entry.readyAt && (
-                  <span className="text-xs text-muted-foreground ml-2">
+                  <span className="text-xs text-[#9CA3AF] ml-2">
                     с {new Date(entry.readyAt).toLocaleTimeString()}
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-1">
-                <Badge variant={entry.status === "InReview" ? "default" : "secondary"}>{entry.status}</Badge>
+              <div className="flex items-center gap-1.5">
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusStyle[entry.status] ?? "bg-[#F3F4F6] text-[#6B7280]"}`}>
+                  {entry.status}
+                </span>
                 {entry.status === "InReview" && (
                   <>
-                    <Button size="sm" variant="default" onClick={() => complete(entry.submissionId, true)}>Принять</Button>
-                    <Button size="sm" variant="destructive" onClick={() => complete(entry.submissionId, false)}>Не принять</Button>
+                    <button
+                      onClick={() => complete(entry.submissionId, true)}
+                      className="h-8 px-3 rounded-lg bg-[#059669] text-white text-xs font-medium hover:bg-[#047857] transition-colors"
+                    >
+                      Принять
+                    </button>
+                    <button
+                      onClick={() => complete(entry.submissionId, false)}
+                      className="h-8 px-3 rounded-lg bg-[#DC2626] text-white text-xs font-medium hover:bg-[#B91C1C] transition-colors"
+                    >
+                      Не принять
+                    </button>
                   </>
                 )}
               </div>
             </div>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
