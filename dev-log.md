@@ -9,3 +9,4 @@
 [2026-04-29 16:30:00] frontend: models.ts - TypeScript interfaces for API
 [2026-04-30 15:50:00] frontend: api.service.ts base HTTP layer
 [2026-05-04 14:20:00] frontend: courses list page
+[2026-05-04 16:55:00] frontend: course card component, enroll button
