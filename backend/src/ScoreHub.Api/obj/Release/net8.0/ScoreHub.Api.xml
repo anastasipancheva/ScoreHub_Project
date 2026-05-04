@@ -25,6 +25,15 @@
         <member name="T:ScoreHub.Api.Controllers.ApiControllerBase">
             <summary>Базовый контроллер: извлекает идентификатор пользователя из JWT.</summary>
         </member>
+        <member name="M:ScoreHub.Api.Controllers.AssistantApplicationController.List(System.Guid,System.Threading.CancellationToken)">
+            <summary>Преподаватель просматривает все заявки на занятие.</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.AssistantApplicationController.Apply(System.Guid,ScoreHub.Api.Controllers.AssistantApplicationController.ApplyDto,System.Threading.CancellationToken)">
+            <summary>Ассистент подаёт заявку на занятие.</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.AssistantApplicationController.Review(System.Guid,System.Guid,ScoreHub.Api.Controllers.AssistantApplicationController.ReviewDto,System.Threading.CancellationToken)">
+            <summary>Преподаватель одобряет или отклоняет заявку.</summary>
+        </member>
         <member name="T:ScoreHub.Api.Controllers.AssistantSessionController">
             <summary>Панель ассистента на паре: вызовы на помощь, очередь командных сдач, приём задачи.</summary>
         </member>
@@ -78,6 +87,18 @@
         <member name="M:ScoreHub.Api.Controllers.ControlPointController.CompleteReview(System.Guid,System.Guid,ScoreHub.Api.Controllers.ControlPointController.KtCompleteDto,System.Threading.CancellationToken)">
             <summary>Завершить индивидуальный приём КТ по submissionId (accepted, result01, defenderCoefficient).</summary>
             <remarks>Параметр activityId в маршруте зарезервирован для симметрии URL; проверка привязки к занятию внутри сервиса.</remarks>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.ControlPointController.UnmarkReady(System.Guid,System.Guid,System.Threading.CancellationToken)">
+            <summary>Студент покидает очередь по задаче (снимает готовность).</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.ControlPointController.SetSolution(System.Guid,System.Guid,ScoreHub.Api.Controllers.ControlPointController.SolutionDto,System.Threading.CancellationToken)">
+            <summary>Студент сохраняет ссылку на решение (Google Drive).</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.ControlPointController.GetSubmissions(System.Guid,System.Guid,System.Threading.CancellationToken)">
+            <summary>Ассистент просматривает решения студентов по задаче.</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.ControlPointController.GetAllKtTasks(System.Guid,System.Threading.CancellationToken)">
+            <summary>Все задачи КТ для текущего студента (включая те, по которым нет submission).</summary>
         </member>
         <member name="T:ScoreHub.Api.Controllers.CoursesController">
             <summary>Список курсов (чтение), запись и зачисление студентов.</summary>
@@ -160,6 +181,12 @@
         <member name="M:ScoreHub.Api.Controllers.ScoringController.CourseScores(System.Guid,System.Threading.CancellationToken)">
             <summary>Сводная таблица баллов всего потока (Teacher/Assistant/Admin).</summary>
         </member>
+        <member name="M:ScoreHub.Api.Controllers.StudentActivitiesController.MyActivities(System.Threading.CancellationToken)">
+            <summary>Все запланированные и активные занятия для курсов, на которые записан пользователь.</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.StudentActivitiesController.Enroll(System.Guid,System.Threading.CancellationToken)">
+            <summary>Самостоятельная запись студента на курс.</summary>
+        </member>
         <member name="T:ScoreHub.Api.Controllers.TeachingController">
             <summary>Настройка курса преподавателем: модули, занятия, задачи, команды, закрепление ассистентов.</summary>
             <remarks>Доступно ролям Teacher и Admin. Используется для сценариев лекции, КТ и занятий с ДЗ.</remarks>
@@ -193,6 +220,30 @@
         </member>
         <member name="M:ScoreHub.Api.Controllers.TeachingController.SetTeamAssistants(System.Guid,ScoreHub.Api.Controllers.TeachingController.IdListDto,System.Threading.CancellationToken)">
             <summary>Закрепить ассистентов за командой (кто ведёт команды на паре). Тело: { "ids": [guid] }.</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.TeachingController.StartActivity(System.Guid,System.Threading.CancellationToken)">
+            <summary>Перевести занятие в статус Active (начать пару).</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.TeachingController.FinishActivity(System.Guid,System.Threading.CancellationToken)">
+            <summary>Перевести занятие в статус Finished (завершить пару).</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.TeachingController.EnrollBulk(System.Guid,ScoreHub.Api.Controllers.TeachingController.EnrollBulkDto,System.Threading.CancellationToken)">
+            <summary>Массовая запись студентов по списку email-адресов. Тело: { "emails": ["a@b.com", ...] }.</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.TeachingController.GetCourseActivities(System.Guid,System.Threading.CancellationToken)">
+            <summary>Все занятия курса для преподавательского расписания.</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.TeachingController.DeleteCourse(System.Guid,System.Threading.CancellationToken)">
+            <summary>Удалить курс вместе со всеми модулями, занятиями и задачами.</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.TeachingController.PatchMaterials(System.Guid,ScoreHub.Api.Controllers.TeachingController.PatchMaterialsDto,System.Threading.CancellationToken)">
+            <summary>Обновить материалы занятия (видео, тест, файл задач).</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.TeachingController.AutoGenerateTeams(System.Guid,ScoreHub.Api.Controllers.TeachingController.AutoGenerateDto,System.Threading.CancellationToken)">
+            <summary>Автоматически сгенерировать команды по записанным студентам курса.</summary>
+        </member>
+        <member name="M:ScoreHub.Api.Controllers.TeachingController.GetTeams(System.Guid,System.Threading.CancellationToken)">
+            <summary>Получить команды занятия с составом.</summary>
         </member>
         <member name="T:ScoreHub.Api.Controllers.TeamManagementController">
             <summary>Авто-генерация команд, назначение ассистентов, обмен студентами, управление ActivityAssistant.</summary>

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ScoreHub.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0997d2f34c718129cff12c5cfc00e4374f12d3bc")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+37a8d1f8df20f8b5ed11c7562c953b7501be8c89")]
 [assembly: System.Reflection.AssemblyProductAttribute("ScoreHub.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ScoreHub.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

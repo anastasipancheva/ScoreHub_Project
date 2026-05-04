@@ -28,6 +28,10 @@ public sealed class Activity
     public bool MiniTestPublished { get; set; } = false;
     public DateTimeOffset? MiniTestOpenedAt { get; set; }
 
+    // Materials / content URLs
+    public string? TaskFileUrl { get; set; }       // КТ / Лекция task PDF
+    public string? TheoryTestUrl { get; set; }     // Лекция Google Forms
+
     public List<TaskSet> TaskSets { get; set; } = new();
     public List<Team> Teams { get; set; } = new();
     public List<ActivityAssistant> ActiveAssistants { get; set; } = new();

@@ -24,6 +24,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const isTeacher = role === "Teacher" || role === "Admin";
   const isAssistant = role === "Assistant";
   const isStudent = role === "Student";
+  const homeHref = isTeacher ? "/admin" : "/";
 
   function handleLogout() {
     logout();
@@ -39,6 +40,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
     { href: "/courses", label: "Курсы", icon: BookOpen, show: isStudent },
     { href: "/assistant", label: "Ассистент", icon: Users, show: isAssistant },
     { href: "/admin", label: "Управление", icon: UserCog, show: isTeacher },
+    { href: "/assistant", label: "Сессия", icon: Users, show: isTeacher },
   ];
 
   return (
@@ -46,7 +48,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <header className="bg-white border-b border-[#E5E7EB] sticky top-0 z-40">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-6 h-14">
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href={homeHref} className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-[#005BFF] flex items-center justify-center">
                 <span className="text-white text-xs font-bold">S</span>
               </div>

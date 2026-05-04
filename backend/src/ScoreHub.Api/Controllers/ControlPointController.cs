@@ -161,6 +161,61 @@ public sealed class ControlPointController : ApiControllerBase
         return Ok(subs);
     }
 
+    /// <summary>Все задачи КТ для текущего студента (включая те, по которым нет submission).</summary>
+    [HttpGet("tasks")]
+    public async Task<IActionResult> GetAllKtTasks(Guid activityId, CancellationToken ct)
+    {
+        var uid = CurrentUserId;
+        if (uid is null) return Unauthorized();
+
+        // All task items for this activity (from any task set)
+        var taskItems = await _db.TaskSets
+            .AsNoTracking()
+            .Where(ts => ts.ActivityId == activityId)
+            .SelectMany(ts => ts.Tasks.Select(t => new { TaskItemId = t.Id, TaskCode = t.Code }))
+            .ToListAsync(ct);
+
+        if (taskItems.Count == 0) return Ok(Array.Empty<object>());
+
+        var taskIds = taskItems.Select(t => t.TaskItemId).ToList();
+
+        // Student's existing submissions
+        var subs = await _db.TaskSubmissions
+            .AsNoTracking()
+            .Where(s => s.ActivityId == activityId && s.StudentId == uid.Value && taskIds.Contains(s.TaskItemId))
+            .ToListAsync(ct);
+
+        // All queue slots for position calc
+        var queueSlots = await _db.TaskSubmissions
+            .AsNoTracking()
+            .Where(s => s.ActivityId == activityId
+                && taskIds.Contains(s.TaskItemId)
+                && (s.Status == SubmissionStatus.ReadyForReview || s.Status == SubmissionStatus.InReview))
+            .Select(s => new { s.TaskItemId, s.ReadyAt })
+            .ToListAsync(ct);
+
+        var subDict = subs.ToDictionary(s => s.TaskItemId);
+
+        var result = taskItems.Select(t =>
+        {
+            subDict.TryGetValue(t.TaskItemId, out var sub);
+            int queuePos = 0;
+            if (sub != null && sub.Status == SubmissionStatus.ReadyForReview)
+                queuePos = queueSlots.Count(q => q.TaskItemId == t.TaskItemId && q.ReadyAt < sub.ReadyAt) + 1;
+
+            return (object)new
+            {
+                taskItemId = t.TaskItemId,
+                taskCode = t.TaskCode,
+                status = sub?.Status.ToString() ?? "Draft",
+                queuePosition = queuePos,
+                solutionUrl = sub?.SolutionUrl
+            };
+        }).ToList();
+
+        return Ok(result);
+    }
+
     public sealed record KtCompleteDto(bool Accepted, int Result01, decimal? DefenderCoefficient);
     public sealed record SolutionDto(string Url);
 }

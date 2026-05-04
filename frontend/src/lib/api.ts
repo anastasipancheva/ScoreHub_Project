@@ -163,6 +163,8 @@ export const admin = {
 export const teaching = {
   createCourse: (code: string, title: string, academicYear: string) =>
     post<string>("/api/teaching/courses", { code, title, academicYear }),
+  deleteCourse: (courseId: string) =>
+    del(`/api/teaching/courses/${courseId}`),
   addModule: (courseId: string, number: number, title: string, startsAt: string, endsAt: string) =>
     post<string>(`/api/teaching/courses/${courseId}/modules`, { number, title, startsAt, endsAt }),
   addActivity: (moduleId: string, type: number, title: string, startsAt: string, endsAt: string) =>
@@ -179,14 +181,14 @@ export const teaching = {
     put(`/api/teaching/teams/${teamId}/members`, { ids }),
   setTeamAssistants: (teamId: string, ids: string[]) =>
     put(`/api/teaching/teams/${teamId}/assistant-links`, { ids }),
-  autoGenerate: (activityId: string, teamSize: number, strategy: number, excludeAbsent: boolean) =>
-    post(`/api/teaching/activities/${activityId}/teams/auto-generate`, { teamSize, strategy, excludeAbsent }),
-  autoAssign: (activityId: string) =>
-    post(`/api/teaching/activities/${activityId}/assistants/auto-assign`),
+  autoGenerate: (activityId: string, teamSize: number) =>
+    post<{ teamCount: number; studentCount: number; teams: ActivityTeam[] }>(`/api/teaching/activities/${activityId}/teams/auto-generate`, { teamSize }),
+  getTeams: (activityId: string) =>
+    get<ActivityTeam[]>(`/api/teaching/activities/${activityId}/teams`),
+  patchMaterials: (activityId: string, body: { preLectureVideoUrl?: string; theoryTestUrl?: string; taskFileUrl?: string }) =>
+    patch(`/api/teaching/activities/${activityId}/materials`, body),
   swapMembers: (activityId: string, studentAId: string, studentBId: string) =>
     put(`/api/teaching/activities/${activityId}/teams/swap-member`, { studentAId, studentBId }),
-  markAbsent: (activityId: string, teamId: string, studentId: string, isAbsent: boolean) =>
-    post(`/api/teaching/activities/${activityId}/teams/${teamId}/members/${studentId}/absent`, { isAbsent }),
   setUserRole: (userId: string, roleName: string) =>
     post(`/api/admin/users/${userId}/roles`, { roleName }),
 };
@@ -215,6 +217,8 @@ export const ktApi = {
     patch(`/api/activities/${activityId}/kt/tasks/${taskItemId}/solution`, { url }),
   getSubmissions: (activityId: string, taskItemId: string) =>
     get<KtStudentSubmission[]>(`/api/activities/${activityId}/kt/tasks/${taskItemId}/submissions`),
+  getAllTasks: (activityId: string) =>
+    get<KtSlot[]>(`/api/activities/${activityId}/kt/tasks`),
 };
 
 // ── Teaching enhancements ─────────────────────────────────────────────────────
@@ -226,6 +230,8 @@ export const teachingApi = {
     post<{ added: number; notFound: number }>(`/api/teaching/courses/${courseId}/enroll-bulk`, { emails }),
   getCourseActivities: (courseId: string) =>
     get<TeacherActivity[]>(`/api/teaching/courses/${courseId}/activities`),
+  getCourseStudents: (courseId: string) =>
+    get<{ id: string; email: string; displayName: string; role: string; enrolledAt: string }[]>(`/api/courses/${courseId}/students`),
 };
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -322,6 +328,10 @@ export interface CourseActivity {
   type: string;
   startsAt: string;
   endsAt: string;
+  preLectureVideoUrl?: string;
+  theoryTestUrl?: string;
+  taskFileUrl?: string;
+  status: string;
   taskSets: CourseTaskSet[];
 }
 
@@ -382,8 +392,19 @@ export interface TeacherActivity {
   status: string;
   startsAt: string;
   endsAt: string;
+  preLectureVideoUrl?: string;
+  theoryTestUrl?: string;
+  taskFileUrl?: string;
   moduleTitle: string;
   moduleNumber: number;
+  moduleId: string;
+}
+
+export interface ActivityTeam {
+  id: string;
+  name: string;
+  members: { userId: string; displayName: string; isAbsent: boolean }[];
+  assistants: { assistantId: string; displayName: string }[];
 }
 
 export interface KtStudentSubmission {
