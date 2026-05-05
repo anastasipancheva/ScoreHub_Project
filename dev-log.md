@@ -11,3 +11,4 @@
 [2026-05-04 14:20:00] frontend: courses list page
 [2026-05-04 16:55:00] frontend: course card component, enroll button
 [2026-05-05 15:00:00] frontend: lecture-detail page - task list
+[2026-05-05 17:20:00] frontend: notifications page and bell icon
