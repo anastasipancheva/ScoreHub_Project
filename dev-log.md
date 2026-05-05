@@ -12,3 +12,4 @@
 [2026-04-30 13:15:00] api: Program.cs - DI, JWT middleware, CORS
 [2026-05-04 09:10:00] domain: add AssistantApplication, TaskSubmission
 [2026-05-04 11:45:00] infra: AddFullDomainModel migration
+[2026-05-05 10:05:00] api: CoursesController - CRUD courses
