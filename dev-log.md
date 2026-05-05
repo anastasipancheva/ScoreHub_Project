@@ -13,3 +13,4 @@
 [2026-05-04 09:10:00] domain: add AssistantApplication, TaskSubmission
 [2026-05-04 11:45:00] infra: AddFullDomainModel migration
 [2026-05-05 10:05:00] api: CoursesController - CRUD courses
+[2026-05-05 12:30:00] infra: AddActivityStatusAndAssistantApps migration
