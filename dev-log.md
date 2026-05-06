@@ -15,3 +15,4 @@
 [2026-05-05 10:05:00] api: CoursesController - CRUD courses
 [2026-05-05 12:30:00] infra: AddActivityStatusAndAssistantApps migration
 [2026-05-06 09:50:00] api: TeamManagementController - CRUD teams
+[2026-05-06 12:00:00] infra: TeachingSetupService - create activities
