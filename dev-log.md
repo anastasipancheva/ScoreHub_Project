@@ -12,3 +12,4 @@
 [2026-05-04 16:55:00] frontend: course card component, enroll button
 [2026-05-05 15:00:00] frontend: lecture-detail page - task list
 [2026-05-05 17:20:00] frontend: notifications page and bell icon
+[2026-05-06 14:35:00] frontend: toast notifications service
