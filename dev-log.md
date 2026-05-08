@@ -18,3 +18,4 @@
 [2026-05-06 12:00:00] infra: TeachingSetupService - create activities
 [2026-05-07 10:25:00] api: TeachingController - lecture management
 [2026-05-07 13:40:00] infra: GroupActivityService - help queue logic
+[2026-05-08 09:30:00] api: AssistantSessionController - session flow
