@@ -14,3 +14,4 @@
 [2026-05-05 17:20:00] frontend: notifications page and bell icon
 [2026-05-06 14:35:00] frontend: toast notifications service
 [2026-05-07 16:15:00] frontend: assistant-session page - help requests
+[2026-05-08 14:45:00] frontend: assistant-index page - active courses
