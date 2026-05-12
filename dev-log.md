@@ -15,3 +15,4 @@
 [2026-05-06 14:35:00] frontend: toast notifications service
 [2026-05-07 16:15:00] frontend: assistant-session page - help requests
 [2026-05-08 14:45:00] frontend: assistant-index page - active courses
+[2026-05-12 15:20:00] frontend: kt-detail page - KT student flow
