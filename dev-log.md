@@ -21,3 +21,4 @@
 [2026-05-08 09:30:00] api: AssistantSessionController - session flow
 [2026-05-08 11:55:00] infra: NotificationService - store notifications
 [2026-05-12 10:10:00] api: ControlPointController - KT endpoints
+[2026-05-12 12:40:00] infra: ControlPointService - KT queue logic
