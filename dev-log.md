@@ -16,3 +16,4 @@
 [2026-05-07 16:15:00] frontend: assistant-session page - help requests
 [2026-05-08 14:45:00] frontend: assistant-index page - active courses
 [2026-05-12 15:20:00] frontend: kt-detail page - KT student flow
+[2026-05-12 17:05:00] frontend: assistant-kt page - KT acceptance flow
