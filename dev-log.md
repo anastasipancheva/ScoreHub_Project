@@ -23,3 +23,4 @@
 [2026-05-12 10:10:00] api: ControlPointController - KT endpoints
 [2026-05-12 12:40:00] infra: ControlPointService - KT queue logic
 [2026-05-13 09:45:00] api: ScoringController - scores CRUD
+[2026-05-13 12:10:00] infra: ScoringService - activity score calculation
