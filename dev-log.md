@@ -24,3 +24,4 @@
 [2026-05-12 12:40:00] infra: ControlPointService - KT queue logic
 [2026-05-13 09:45:00] api: ScoringController - scores CRUD
 [2026-05-13 12:10:00] infra: ScoringService - activity score calculation
+[2026-05-14 10:30:00] api: StudentActivitiesController - student view
