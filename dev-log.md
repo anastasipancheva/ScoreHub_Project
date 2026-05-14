@@ -18,3 +18,4 @@
 [2026-05-12 15:20:00] frontend: kt-detail page - KT student flow
 [2026-05-12 17:05:00] frontend: assistant-kt page - KT acceptance flow
 [2026-05-13 14:50:00] frontend: scores page - student grade view
+[2026-05-14 15:35:00] frontend: profile page - user info and role
