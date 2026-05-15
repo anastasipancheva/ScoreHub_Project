@@ -26,3 +26,4 @@
 [2026-05-13 12:10:00] infra: ScoringService - activity score calculation
 [2026-05-14 10:30:00] api: StudentActivitiesController - student view
 [2026-05-14 13:00:00] infra: TeamGenerationService - auto team split
+[2026-05-15 09:55:00] api: HomeworkController - homework submission
