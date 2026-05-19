@@ -29,3 +29,4 @@
 [2026-05-15 09:55:00] api: HomeworkController - homework submission
 [2026-05-15 12:25:00] infra: HomeworkService - submission and queue logic
 [2026-05-19 10:40:00] api: AdminController - user management
+[2026-05-19 13:05:00] infra: CourseTemplateService - save/load templates
