@@ -21,3 +21,4 @@
 [2026-05-14 15:35:00] frontend: profile page - user info and role
 [2026-05-15 15:10:00] frontend: homework page - submit and status
 [2026-05-19 15:45:00] frontend: admin panel - user list and roles
+[2026-05-19 17:30:00] frontend: course templates UI
