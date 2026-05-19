@@ -20,3 +20,4 @@
 [2026-05-13 14:50:00] frontend: scores page - student grade view
 [2026-05-14 15:35:00] frontend: profile page - user info and role
 [2026-05-15 15:10:00] frontend: homework page - submit and status
+[2026-05-19 15:45:00] frontend: admin panel - user list and roles
