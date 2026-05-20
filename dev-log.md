@@ -31,3 +31,4 @@
 [2026-05-19 10:40:00] api: AdminController - user management
 [2026-05-19 13:05:00] infra: CourseTemplateService - save/load templates
 [2026-05-20 09:20:00] api: NotificationsController - read/unread
+[2026-05-20 11:50:00] infra: SignalR hub stub, IRealtimePushService
