@@ -32,3 +32,4 @@
 [2026-05-19 13:05:00] infra: CourseTemplateService - save/load templates
 [2026-05-20 09:20:00] api: NotificationsController - read/unread
 [2026-05-20 11:50:00] infra: SignalR hub stub, IRealtimePushService
+[2026-05-21 10:15:00] api: CourseTemplatesController - template CRUD
