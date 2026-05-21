@@ -23,3 +23,4 @@
 [2026-05-19 15:45:00] frontend: admin panel - user list and roles
 [2026-05-19 17:30:00] frontend: course templates UI
 [2026-05-20 14:25:00] frontend: signalr.service.ts - real-time updates
+[2026-05-21 16:00:00] frontend: fix routing guard redirect after login
