@@ -25,3 +25,4 @@
 [2026-05-20 14:25:00] frontend: signalr.service.ts - real-time updates
 [2026-05-21 16:00:00] frontend: fix routing guard redirect after login
 [2026-05-26 15:55:00] frontend: join page - enter invite code
+[2026-05-26 17:40:00] frontend: add join link to dashboard
