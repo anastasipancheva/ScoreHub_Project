@@ -26,3 +26,4 @@
 [2026-05-21 16:00:00] frontend: fix routing guard redirect after login
 [2026-05-26 15:55:00] frontend: join page - enter invite code
 [2026-05-26 17:40:00] frontend: add join link to dashboard
+[2026-05-27 14:40:00] frontend: assistant stats panel in session page
