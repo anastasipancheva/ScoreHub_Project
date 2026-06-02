@@ -28,3 +28,4 @@
 [2026-05-26 17:40:00] frontend: add join link to dashboard
 [2026-05-27 14:40:00] frontend: assistant stats panel in session page
 [2026-06-02 15:30:00] frontend: calendar page - schedule view
+[2026-06-02 17:15:00] frontend: date picker for template creation
