@@ -38,3 +38,4 @@
 [2026-05-26 13:20:00] api: join course by invite code endpoint
 [2026-05-27 09:35:00] api: AssistantStatsController - session stats
 [2026-05-27 12:00:00] fix: team swap log, prevent double assignment
+[2026-06-02 10:20:00] infra: AddModuleTemplateDates migration
