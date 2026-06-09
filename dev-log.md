@@ -43,3 +43,4 @@
 [2026-06-03 09:40:00] api: GradebookController - final grade view
 [2026-06-03 12:10:00] domain: GradeOverride entity - manual grade fix
 [2026-06-09 10:05:00] fix: JWT expiry handling, refresh flow
+[2026-06-09 12:30:00] infra: AddCourseInviteCode migration
