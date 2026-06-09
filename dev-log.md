@@ -30,3 +30,4 @@
 [2026-06-02 15:30:00] frontend: calendar page - schedule view
 [2026-06-02 17:15:00] frontend: date picker for template creation
 [2026-06-03 14:50:00] frontend: gradebook page - grade table
+[2026-06-09 15:00:00] frontend: fix notification badge count
