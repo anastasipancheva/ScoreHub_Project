@@ -45,3 +45,4 @@
 [2026-06-09 10:05:00] fix: JWT expiry handling, refresh flow
 [2026-06-09 12:30:00] infra: AddCourseInviteCode migration
 [2026-06-10 09:50:00] fix: KT queue - correct order by ReadyAt
+[2026-06-10 11:20:00] fix: homework timer reset on resubmit
