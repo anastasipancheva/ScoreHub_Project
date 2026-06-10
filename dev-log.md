@@ -33,3 +33,4 @@
 [2026-06-09 15:00:00] frontend: fix notification badge count
 [2026-06-09 16:45:00] frontend: activity-type.ts - enum helpers
 [2026-06-10 14:10:00] frontend: lecture page - show task progress bar
+[2026-06-10 16:30:00] frontend: responsive layout fixes for mobile
