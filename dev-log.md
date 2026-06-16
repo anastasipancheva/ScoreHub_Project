@@ -46,3 +46,4 @@
 [2026-06-09 12:30:00] infra: AddCourseInviteCode migration
 [2026-06-10 09:50:00] fix: KT queue - correct order by ReadyAt
 [2026-06-10 11:20:00] fix: homework timer reset on resubmit
+[2026-06-16 10:35:00] refactor: OpResult pattern in all services
