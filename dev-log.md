@@ -34,3 +34,4 @@
 [2026-06-09 16:45:00] frontend: activity-type.ts - enum helpers
 [2026-06-10 14:10:00] frontend: lecture page - show task progress bar
 [2026-06-10 16:30:00] frontend: responsive layout fixes for mobile
+[2026-06-16 15:20:00] frontend: environment.ts - prod API URL config
