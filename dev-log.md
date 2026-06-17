@@ -37,3 +37,4 @@
 [2026-06-16 15:20:00] frontend: environment.ts - prod API URL config
 [2026-06-16 17:00:00] frontend: loading spinner component
 [2026-06-17 14:40:00] frontend: role-based navigation in shell
+[2026-06-17 16:25:00] frontend: error handling - 401/403 redirects
