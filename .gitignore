@@ -23,3 +23,7 @@ frontend/.next/
 # OS
 .DS_Store
 Thumbs.db
+
+# Claude Code
+.claude/
+make_history.ps1
