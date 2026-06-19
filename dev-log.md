@@ -50,3 +50,4 @@
 [2026-06-16 12:50:00] fix: CORS settings for production deploy
 [2026-06-17 09:30:00] docs: update README with setup instructions
 [2026-06-17 11:55:00] fix: DatabaseSeeder - seed admin and test users
+[2026-06-19 10:00:00] chore: Dockerfile and railpack config for deploy
