@@ -53,3 +53,4 @@
 [2026-06-19 10:00:00] chore: Dockerfile and railpack config for deploy
 [2026-06-19 12:15:00] fix: migration snapshot regenerated
 [2026-06-20 10:10:00] release: v1.0 - backend ready for demo
+[2026-06-20 12:00:00] release: backend smoke-tested on Railway
