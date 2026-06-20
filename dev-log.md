@@ -41,3 +41,4 @@
 [2026-06-19 14:50:00] frontend: build optimizations, lazy loading
 [2026-06-19 16:35:00] frontend: final UI polish - colors and spacing
 [2026-06-20 13:30:00] release: frontend build passes, prod verified
+[2026-06-20 14:45:00] release: fix prod API base URL in environment
