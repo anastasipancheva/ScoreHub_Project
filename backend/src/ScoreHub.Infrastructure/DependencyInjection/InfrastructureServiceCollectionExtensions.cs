@@ -14,12 +14,14 @@ public static class InfrastructureServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        // Строка подключения берётся из конфигурации (appsettings / env ConnectionStrings__ScoreHub).
         var connectionString = configuration.GetConnectionString("ScoreHub");
 
+        // Локальный дефолт (для разработки и design-time миграций), если строка не задана.
         if (string.IsNullOrWhiteSpace(connectionString))
-            connectionString = "Data Source=scorehub.dev.db";
+            connectionString = "Host=localhost;Port=5432;Database=scorehub;Username=postgres;Password=postgres";
 
-        services.AddDbContext<ScoreHubDbContext>(opts => opts.UseSqlite(connectionString));
+        services.AddDbContext<ScoreHubDbContext>(opts => opts.UseNpgsql(connectionString));
 
         services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
