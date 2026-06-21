@@ -111,10 +111,17 @@ import { Subscription } from 'rxjs';
 
         @if (teamId && started) {
           <!-- Call assistant (#B8 — only when started) -->
-          <button (click)="callAssistant()"
-            class="h-10 px-5 rounded-lg border border-[#E5E7EB] text-sm text-[#6B7280] font-medium hover:border-[#005BFF] hover:text-[#005BFF] transition-colors">
-            🙋 Позвать ассистента
-          </button>
+          @if (!helpRequested) {
+            <button (click)="callAssistant()"
+              class="h-10 px-5 rounded-lg border border-[#E5E7EB] text-sm text-[#6B7280] font-medium hover:border-[#005BFF] hover:text-[#005BFF] transition-colors">
+              🙋 Позвать ассистента
+            </button>
+          } @else {
+            <button (click)="cancelAssistant()"
+              class="h-10 px-5 rounded-lg border border-[#DC2626] text-sm text-[#DC2626] font-medium hover:bg-[#FEE2E2] transition-colors">
+              ✖ Отменить вызов
+            </button>
+          }
 
           <!-- Mark task ready with task number -->
           <div class="space-y-2">
@@ -131,7 +138,6 @@ import { Subscription } from 'rxjs';
                   ✓ Готово
                 </button>
               </div>
-              <p class="text-[11px] text-[#9CA3AF]">Тот, кто отметит задачу готовой, будет её защищать у ассистента.</p>
             } @else {
               <p class="text-xs text-[#9CA3AF]">Преподаватель ещё не указал количество задач.</p>
             }
@@ -160,6 +166,7 @@ export class LectureDetailComponent implements OnInit, OnDestroy {
   theoryTestUrl: string | null = null;
   taskFileUrl: string | null = null;
   assistantName: string | null = null;
+  helpRequested = false;
   miniTest: MiniTestDto | null = null;
   answers: Record<string, number> = {};
   testSubmitted = false;
@@ -205,6 +212,7 @@ export class LectureDetailComponent implements OnInit, OnDestroy {
       this.theoryTestUrl = data.theoryTestUrl ?? null;
       this.taskFileUrl = data.taskFileUrl ?? null;
       this.assistantName = data.assistantName ?? null;
+      this.helpRequested = data.helpRequested ?? false;
     } catch { this.teamId = null; }
     finally { this.teamLoading = false; }
   }
@@ -242,7 +250,17 @@ export class LectureDetailComponent implements OnInit, OnDestroy {
     if (!this.teamId) return;
     try {
       await this.api.requestHelp(this.teamId);
+      this.helpRequested = true;
       this.toast.success('Ассистент вызван!');
+    } catch (e: unknown) { this.toast.error(e instanceof Error ? e.message : 'Ошибка'); }
+  }
+
+  async cancelAssistant() {
+    if (!this.teamId) return;
+    try {
+      await this.api.cancelHelp(this.teamId);
+      this.helpRequested = false;
+      this.toast.success('Вызов отменён');
     } catch (e: unknown) { this.toast.error(e instanceof Error ? e.message : 'Ошибка'); }
   }
 

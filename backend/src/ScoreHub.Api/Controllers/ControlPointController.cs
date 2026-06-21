@@ -216,6 +216,65 @@ public sealed class ControlPointController : ApiControllerBase
         return Ok(result);
     }
 
+    /// <summary>Условия КТ (ссылка) и статус занятия — для студента.</summary>
+    [HttpGet("info")]
+    public async Task<IActionResult> GetKtInfo(Guid activityId, CancellationToken ct)
+    {
+        var a = await _db.Activities.AsNoTracking()
+            .Where(x => x.Id == activityId)
+            .Select(x => new { x.Title, x.TaskFileUrl, x.Status })
+            .FirstOrDefaultAsync(ct);
+        if (a is null) return NotFound();
+        return Ok(new { title = a.Title, conditionsUrl = a.TaskFileUrl, status = a.Status.ToString() });
+    }
+
+    /// <summary>Полная сводка КТ для ассистента/преподавателя: задачи и по каждой — кто отметил готовность,
+    /// время, статус и присланное решение (#6).</summary>
+    [HttpGet("overview")]
+    [Authorize(Roles = $"{AppRoles.Assistant},{AppRoles.Teacher},{AppRoles.Admin}")]
+    public async Task<IActionResult> Overview(Guid activityId, CancellationToken ct)
+    {
+        var taskItems = await _db.TaskSets
+            .AsNoTracking()
+            .Where(ts => ts.ActivityId == activityId)
+            .SelectMany(ts => ts.Tasks.Select(t => new { TaskItemId = t.Id, t.Code }))
+            .ToListAsync(ct);
+        if (taskItems.Count == 0) return Ok(Array.Empty<object>());
+
+        var taskIds = taskItems.Select(t => t.TaskItemId).ToList();
+
+        var subs = await _db.TaskSubmissions
+            .AsNoTracking()
+            .Where(s => s.ActivityId == activityId && taskIds.Contains(s.TaskItemId) && s.StudentId != null)
+            .Join(_db.Users, s => s.StudentId, u => u.Id, (s, u) => new {
+                s.Id, s.TaskItemId, studentName = u.DisplayName,
+                status = s.Status.ToString(), s.ReadyAt, s.SolutionUrl, s.Result01
+            })
+            .ToListAsync(ct);
+
+        var result = taskItems
+            .OrderBy(t => int.TryParse(t.Code, out var n) ? n : int.MaxValue)
+            .Select(t => (object)new {
+                taskItemId = t.TaskItemId,
+                taskCode = t.Code,
+                submissions = subs
+                    .Where(s => s.TaskItemId == t.TaskItemId)
+                    .OrderBy(s => s.ReadyAt ?? DateTimeOffset.MaxValue)
+                    .Select(s => new {
+                        submissionId = s.Id,
+                        studentName = s.studentName,
+                        status = s.status,
+                        readyAt = s.ReadyAt,
+                        solutionUrl = s.SolutionUrl,
+                        result01 = s.Result01
+                    })
+                    .ToList()
+            })
+            .ToList();
+
+        return Ok(result);
+    }
+
     public sealed record KtCompleteDto(bool Accepted, int Result01, decimal? DefenderCoefficient);
     public sealed record SolutionDto(string Url);
 }

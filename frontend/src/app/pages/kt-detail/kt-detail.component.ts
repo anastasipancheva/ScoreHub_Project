@@ -44,11 +44,17 @@ const STATUS_CLASS: Record<string, string> = {
     <div class="space-y-5 max-w-2xl">
       <h1 class="text-lg font-semibold text-[#1A1A1B]">Контрольная точка</h1>
 
-      <div class="bg-[#EAF2FF] rounded-xl border border-[#C7DCFF] p-4">
+      <div class="bg-[#EAF2FF] rounded-xl border border-[#C7DCFF] p-4 space-y-2">
         <p class="text-xs text-[#4B72B0] leading-relaxed">
           Отметьте задачи флажком, когда готовы сдавать — вас добавят в очередь.
-          Укажите ссылку на решение (Google Drive) и нажмите «Сохранить».
+          Прикрепите решение к задаче (ссылку на файл, фото или Google Drive) и нажмите «Сохранить».
         </p>
+        @if (conditionsUrl) {
+          <a [href]="conditionsUrl" target="_blank" rel="noopener noreferrer"
+            class="inline-flex items-center gap-1.5 text-xs font-medium text-[#005BFF] hover:underline">
+            📄 Условия контрольной точки
+          </a>
+        }
       </div>
 
       @if (tasks.length === 0) {
@@ -91,7 +97,7 @@ const STATUS_CLASS: Record<string, string> = {
             @if (task.status !== 'Accepted' && task.status !== 'Rejected') {
               <div class="flex gap-2">
                 <input type="url"
-                  placeholder="Ссылка на решение (Google Drive)"
+                  placeholder="Ссылка на решение: файл, фото или Google Drive"
                   [value]="task.solutionUrl"
                   (input)="onUrlChange(task, $any($event.target).value)"
                   class="flex-1 h-9 px-3 rounded-lg border border-[#E5E7EB] text-sm outline-none focus:border-[#005BFF] focus:ring-2 focus:ring-[#005BFF]/10 transition" />
@@ -124,12 +130,14 @@ export class KtDetailComponent implements OnInit, OnDestroy {
 
   activityId = '';
   tasks: TaskState[] = [];
+  conditionsUrl: string | null = null;
   readonly STATUS_LABEL = STATUS_LABEL;
   readonly STATUS_CLASS = STATUS_CLASS;
   private sub?: Subscription;
 
   ngOnInit() {
     this.activityId = this.route.snapshot.paramMap.get('id') ?? '';
+    this.api.ktInfo(this.activityId).then(i => this.conditionsUrl = i.conditionsUrl ?? null).catch(() => {});
     this.reload();
     this.sub = this.signalr.notification$.subscribe(payload => {
       if (payload.type === 'KtCalled') {

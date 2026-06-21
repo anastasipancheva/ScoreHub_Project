@@ -472,6 +472,29 @@ public sealed class TeachingController : ApiControllerBase
         return Ok();
     }
 
+    /// <summary>Исключить студента с курса (снять запись и убрать из команд курса).</summary>
+    [HttpDelete("courses/{courseId:guid}/students/{studentId:guid}")]
+    public async Task<IActionResult> RemoveStudent(Guid courseId, Guid studentId, CancellationToken ct)
+    {
+        var enrollment = await _db.CourseEnrollments
+            .FirstOrDefaultAsync(e => e.CourseId == courseId && e.UserId == studentId, ct);
+        if (enrollment is null) return NotFound(new { error = "Студент не записан на курс." });
+
+        // Убираем из всех команд занятий этого курса.
+        var teamIds = await _db.Teams
+            .Where(t => t.Activity.Module.CourseId == courseId)
+            .Select(t => t.Id)
+            .ToListAsync(ct);
+        if (teamIds.Count > 0)
+            await _db.TeamMembers
+                .Where(m => teamIds.Contains(m.TeamId) && m.UserId == studentId)
+                .ExecuteDeleteAsync(ct);
+
+        _db.CourseEnrollments.Remove(enrollment);
+        await _db.SaveChangesAsync(ct);
+        return Ok();
+    }
+
     /// <summary>Удалить курс вместе со всеми модулями, занятиями и задачами.</summary>
     [HttpDelete("courses/{courseId:guid}")]
     public async Task<IActionResult> DeleteCourse(Guid courseId, CancellationToken ct)

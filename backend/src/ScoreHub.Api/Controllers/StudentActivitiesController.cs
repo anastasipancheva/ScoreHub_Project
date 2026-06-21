@@ -120,18 +120,31 @@ public sealed class StudentActivitiesController : ApiControllerBase
             .Join(_db.Users, ta => ta.AssistantId, u => u.Id, (ta, u) => new { u.Id, u.DisplayName })
             .FirstOrDefaultAsync(ct);
 
+        // Состав команды (для отображения студенту своих сокомандников)
+        var members = await _db.TeamMembers
+            .AsNoTracking()
+            .Where(m => m.TeamId == membership.TeamId)
+            .Join(_db.Users, m => m.UserId, u => u.Id, (m, u) => new { userId = u.Id, displayName = u.DisplayName, m.IsAbsent })
+            .ToListAsync(ct);
+
+        // Есть ли открытый вызов ассистента (для кнопки «Отменить вызов»).
+        var helpRequested = await _db.TeamHelpRequests
+            .AnyAsync(h => h.TeamId == membership.TeamId && h.Status == Domain.Enums.TeamHelpRequestStatus.Open, ct);
+
         return Ok(new
         {
             teamId = membership.TeamId,
             teamName = membership.Name,
             tasks,
+            members,
             activityTitle = activity.Title,
             activityStatus = activity.Status.ToString(),
             preLectureVideoUrl = activity.PreLectureVideoUrl,
             theoryTestUrl = activity.TheoryTestUrl,
             taskFileUrl = activity.TaskFileUrl,
             taskCount = activity.TaskCount,
-            assistantName = assistant != null ? assistant.DisplayName : null
+            assistantName = assistant != null ? assistant.DisplayName : null,
+            helpRequested
         });
     }
 

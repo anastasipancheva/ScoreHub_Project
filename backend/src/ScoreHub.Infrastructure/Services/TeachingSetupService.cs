@@ -280,11 +280,31 @@ public sealed class TeachingSetupService : ITeachingSetupService
                 return OpResult<Unit>.Fail($"Пользователь {aid} не найден.");
         }
 
+        var activityId = await _db.Teams.Where(t => t.Id == teamId).Select(t => t.ActivityId).FirstAsync(ct);
+
         var rows = await _db.TeamAssistants.Where(x => x.TeamId == teamId).ToListAsync(ct);
         _db.TeamAssistants.RemoveRange(rows);
 
         foreach (var aid in assistantUserIds.Distinct())
+        {
             _db.TeamAssistants.Add(new TeamAssistant { TeamId = teamId, AssistantId = aid });
+
+            // #3 — даже если команды уже сформированы, назначаемый ассистент должен быть
+            // закреплён за занятием (иначе не получит уведомления / не пройдёт гейтинг входа).
+            var alreadyAssigned = await _db.ActivityAssistants
+                .AnyAsync(x => x.ActivityId == activityId && x.AssistantId == aid, ct);
+            if (!alreadyAssigned)
+                _db.ActivityAssistants.Add(new ActivityAssistant { ActivityId = activityId, AssistantId = aid });
+
+            // Одобряем «висящую» заявку ассистента на это занятие, если есть.
+            var app = await _db.AssistantApplications
+                .FirstOrDefaultAsync(a => a.ActivityId == activityId && a.AssistantId == aid, ct);
+            if (app is not null && app.Status != "Approved")
+            {
+                app.Status = "Approved";
+                app.ReviewedAt = DateTimeOffset.UtcNow;
+            }
+        }
 
         await _db.SaveChangesAsync(ct);
         return OpResult<Unit>.Ok(Unit.Value);

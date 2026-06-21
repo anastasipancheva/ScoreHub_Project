@@ -29,6 +29,16 @@ public sealed class TeamStudentController : ApiControllerBase
         return r.IsOk ? Ok(new { id = r.Value }) : BadRequest(new { error = r.Error });
     }
 
+    /// <summary>Отменить открытый вызов ассистента у команды.</summary>
+    [HttpPost("{teamId:guid}/help-requests/cancel")]
+    public async Task<IActionResult> CancelHelp(Guid teamId, CancellationToken ct)
+    {
+        var uid = CurrentUserId;
+        if (uid is null) return Unauthorized();
+        var r = await _group.CancelAssistantHelp(uid.Value, teamId, ct);
+        return r.IsOk ? Ok() : BadRequest(new { error = r.Error });
+    }
+
     /// <summary>Отметить готовность сдать задачу от имени команды; фиксируется время для очереди.</summary>
     [HttpPost("{teamId:guid}/tasks/{taskItemId:guid}/ready")]
     public async Task<IActionResult> MarkReady(Guid teamId, Guid taskItemId, CancellationToken ct)

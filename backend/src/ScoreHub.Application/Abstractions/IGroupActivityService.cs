@@ -5,6 +5,7 @@ namespace ScoreHub.Application.Abstractions;
 public interface IGroupActivityService
 {
     Task<OpResult<Guid>> RequestAssistantHelp(Guid actorId, Guid teamId, string? message, CancellationToken ct = default);
+    Task<OpResult<Unit>> CancelAssistantHelp(Guid actorId, Guid teamId, CancellationToken ct = default);
     Task<OpResult<Unit>> MarkTeamTaskReady(Guid actorId, Guid teamId, Guid taskItemId, CancellationToken ct = default);
 
     /// <summary>Отметить готовность сдать задачу по её номеру (1..TaskCount занятия).

@@ -362,18 +362,22 @@ function defaultAcademicYear() {
                 }
                 <div>
                   <label class="block text-xs text-[#6B7280] mb-1">
-                    📎 {{ matHwModuleIds.length > 0 ? 'Файл с домашними заданиями' : matActivity.typeLabel === 'Лекция' ? 'Файл с заданиями для лекции' : 'Файл с заданиями КТ' }}
+                    {{ matHwModuleIds.length > 0 ? '📎 Файл с домашними заданиями' : matActivity.typeLabel === 'Лекция' ? '📎 Файл с заданиями для лекции' : '🔗 Ссылка на условия КТ' }}
                   </label>
                   <input type="url" [class]="INPUT + ' w-full'" placeholder="https://drive.google.com/..."
                     [(ngModel)]="matFileUrl" />
                 </div>
-                @if (matHwModuleIds.length === 0 && matActivity.typeLabel !== 'КТ') {
+                @if (matHwModuleIds.length === 0) {
                   <div class="space-y-3">
                     <div>
                       <label class="block text-xs text-[#6B7280] mb-1">🔢 Количество задач</label>
                       <input type="number" min="0" [class]="INPUT + ' w-32'" placeholder="напр. 6"
                         [(ngModel)]="matTaskCount" (ngModelChange)="syncTaskPoints()" />
-                      <p class="text-[10px] text-[#9CA3AF] mt-1">Студенты отмечают задачу готовой по номеру (1…N).</p>
+                      <p class="text-[10px] text-[#9CA3AF] mt-1">
+                        {{ matActivity.typeLabel === 'КТ'
+                          ? 'Каждая задача КТ — отдельный блок: студент отмечает её галочкой и прикрепляет решение (файл/ссылка/фото).'
+                          : 'Студенты отмечают задачу готовой по номеру (1…N).' }}
+                      </p>
                     </div>
                     @if (matTaskPoints.length > 0) {
                       <div>
@@ -454,7 +458,13 @@ function defaultAcademicYear() {
                             <p class="text-sm font-medium text-[#1A1A1B]">{{ u.displayName }}</p>
                             <p class="text-xs text-[#6B7280]">{{ u.email }}</p>
                           </div>
-                          <span class="text-xs text-[#059669] bg-[#D1FAE5] px-2 py-0.5 rounded-full">Студент</span>
+                          <div class="flex items-center gap-2">
+                            <span class="text-xs text-[#059669] bg-[#D1FAE5] px-2 py-0.5 rounded-full">Студент</span>
+                            <button (click)="removeStudent(u.id, u.displayName)"
+                              class="text-xs text-[#DC2626] hover:bg-[#FEE2E2] px-2 py-1 rounded-lg transition-colors">
+                              Исключить
+                            </button>
+                          </div>
                         </div>
                       }
                     </div>
@@ -1234,6 +1244,16 @@ export class AdminComponent implements OnInit {
     try { this.courseStudents = await this.api.courseStudents(this.selected); } catch {}
   }
 
+  async removeStudent(studentId: string, name: string) {
+    if (!this.selected) return;
+    if (!confirm(`Исключить студента «${name}» с курса? Он будет снят со всех команд этого курса.`)) return;
+    try {
+      await this.api.removeStudent(this.selected, studentId);
+      this.toast.success('Студент исключён');
+      this.loadStudents();
+    } catch (e: unknown) { this.toast.error(e instanceof Error ? e.message : 'Ошибка'); }
+  }
+
   async loadSchedule() {
     if (!this.selected) return;
     this.scheduleLoading = true;
@@ -1490,10 +1510,13 @@ export class AdminComponent implements OnInit {
           .then(list => this.teamStudents = list.filter(s => s.role === 'Student').map(s => ({ id: s.id, displayName: s.displayName })))
           .catch(() => this.teamStudents = []);
       }
+      // #3 — включаем и подавших заявку (Pending), и одобренных: при назначении
+      // в команду ассистент автоматически закрепляется за занятием и одобряется,
+      // даже если команды уже сформированы (не нужно пересоздавать).
       this.api.approvedAssistants(actId)
         .then(apps => this.teamAssistantOptions = apps
-          .filter(a => a.status === 'Approved')
-          .map(a => ({ id: a.assistantId, displayName: a.assistantName })))
+          .filter(a => a.status === 'Approved' || a.status === 'Pending')
+          .map(a => ({ id: a.assistantId, displayName: a.assistantName + (a.status === 'Pending' ? ' (заявка)' : '') })))
         .catch(() => this.teamAssistantOptions = []);
     }
     catch { this.teams = []; }

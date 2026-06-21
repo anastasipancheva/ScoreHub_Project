@@ -49,6 +49,12 @@ public sealed class GroupActivityService : IGroupActivityService
         if (team.Members.All(m => m.UserId != actorId))
             return OpResult<Guid>.Fail("Вы не в этой команде.");
 
+        // #4 — если уже есть открытый вызов, не создаём дубль и не шлём повторное уведомление.
+        var openHr = await _db.TeamHelpRequests
+            .FirstOrDefaultAsync(h => h.TeamId == teamId && h.Status == TeamHelpRequestStatus.Open, ct);
+        if (openHr is not null)
+            return OpResult<Guid>.Ok(openHr.Id);
+
         var hr = new TeamHelpRequest
         {
             Id = Guid.NewGuid(),
@@ -72,6 +78,22 @@ public sealed class GroupActivityService : IGroupActivityService
             ct);
 
         return OpResult<Guid>.Ok(hr.Id);
+    }
+
+    /// <summary>#1 — команда отменяет свой открытый вызов ассистента.</summary>
+    public async Task<OpResult<Unit>> CancelAssistantHelp(Guid actorId, Guid teamId, CancellationToken ct = default)
+    {
+        var team = await _db.Teams.Include(t => t.Members).FirstOrDefaultAsync(t => t.Id == teamId, ct);
+        if (team is null) return OpResult<Unit>.Fail("Команда не найдена.");
+        if (team.Members.All(m => m.UserId != actorId))
+            return OpResult<Unit>.Fail("Вы не в этой команде.");
+
+        var open = await _db.TeamHelpRequests
+            .Where(h => h.TeamId == teamId && h.Status == TeamHelpRequestStatus.Open)
+            .ToListAsync(ct);
+        foreach (var h in open) h.Status = TeamHelpRequestStatus.Cancelled;
+        await _db.SaveChangesAsync(ct);
+        return OpResult<Unit>.Ok(Unit.Value);
     }
 
     public async Task<OpResult<Unit>> MarkTeamTaskReadyByNumber(Guid actorId, Guid teamId, int taskNumber, CancellationToken ct = default)

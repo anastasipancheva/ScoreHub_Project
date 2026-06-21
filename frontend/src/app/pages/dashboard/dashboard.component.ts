@@ -70,6 +70,34 @@ import { activityTypeIcon, activityTypeIconBg } from '../../core/activity-type';
         </div>
       }
 
+      <!-- My team for the nearest activity (#8) -->
+      @if (!auth.isAssistant() && nearestTeam && nearestActivity) {
+        <div class="space-y-2">
+          <p class="text-xs font-semibold text-[#6B7280] uppercase tracking-wide">Моя команда на ближайшем занятии</p>
+          <a [routerLink]="activityHref(nearestActivity)"
+             class="bg-white rounded-xl border border-[#E5E7EB] p-4 block hover:border-[#005BFF]/40 hover:shadow-sm transition-all">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <p class="text-sm font-semibold text-[#1A1A1B]">{{ nearestTeam.teamName }}</p>
+                <p class="text-xs text-[#6B7280]">{{ nearestActivity.title }} · {{ nearestActivity.courseCode }}</p>
+              </div>
+              @if (nearestTeam.assistantName) {
+                <span class="text-xs text-[#D97706] bg-[#FEF3C7] px-2 py-1 rounded-md font-medium">Ассистент: {{ nearestTeam.assistantName }}</span>
+              }
+            </div>
+            <div class="flex flex-wrap gap-2">
+              @for (m of nearestTeam.members; track m.userId) {
+                <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full"
+                  [class]="m.isAbsent ? 'bg-[#FEE2E2] text-[#DC2626] line-through' : 'bg-[#EAF2FF] text-[#005BFF]'">
+                  <span class="w-4 h-4 rounded-full bg-white/60 flex items-center justify-center text-[9px] font-bold">{{ m.displayName?.[0]?.toUpperCase() }}</span>
+                  {{ m.displayName }}
+                </span>
+              }
+            </div>
+          </a>
+        </div>
+      }
+
       <!-- Score summary per course -->
       @if (!auth.isAssistant() && scoresByCourse.length > 0) {
         <div class="space-y-2">
@@ -157,8 +185,14 @@ export class DashboardComponent implements OnInit {
   allScores: Map<string, StudentScore[]> = new Map();
   unread = 0;
   loading = true;
+  nearestTeam: { teamId: string; teamName: string; assistantName: string | null; members: { userId: string; displayName: string; isAbsent: boolean }[] } | null = null;
 
   get active() { return this.activities.filter(a => a.status === 'Active'); }
+
+  // Ближайшее релевантное занятие с командами: активное, иначе ближайшее предстоящее.
+  get nearestActivity(): StudentActivity | null {
+    return this.active[0] ?? this.upcoming[0] ?? null;
+  }
   // #6 — «предстоящие»: только запланированные и ещё не прошедшие (не завершённые).
   get upcoming() {
     const now = Date.now();
@@ -196,7 +230,10 @@ export class DashboardComponent implements OnInit {
       this.api.listCourses(),
       this.api.listNotifications()
     ]);
-    if (acts.status === 'fulfilled') this.activities = acts.value;
+    if (acts.status === 'fulfilled') {
+      this.activities = acts.value;
+      this.loadNearestTeam();
+    }
     if (courses.status === 'fulfilled') {
       this.courseList = courses.value;
       // load own scores for enrolled courses (студент тянет персональный эндпоинт)
@@ -209,6 +246,20 @@ export class DashboardComponent implements OnInit {
     }
     if (notifs.status === 'fulfilled') this.unread = notifs.value.filter(n => !n.readAt).length;
     this.loading = false;
+  }
+
+  async loadNearestTeam() {
+    this.nearestTeam = null;
+    const a = this.nearestActivity;
+    if (this.auth.isAssistant() || !a) return;
+    try {
+      const t = await this.api.getMyTeam(a.id);
+      this.nearestTeam = {
+        teamId: t.teamId, teamName: t.teamName,
+        assistantName: t.assistantName ?? null,
+        members: t.members ?? []
+      };
+    } catch { this.nearestTeam = null; }
   }
 
   activityHref(a: StudentActivity) {

@@ -85,9 +85,12 @@ export class ApiService {
       activityTitle?: string; activityStatus?: string;
       preLectureVideoUrl?: string | null; theoryTestUrl?: string | null; taskFileUrl?: string | null;
       taskCount?: number; assistantName?: string | null;
+      members?: { userId: string; displayName: string; isAbsent: boolean }[];
+      helpRequested?: boolean;
     }>(`/api/activities/${activityId}/my-team`);
   }
   requestHelp(teamId: string, message?: string) { return this.post<{ id: string }>(`/api/teams/${teamId}/help-requests`, { message }); }
+  cancelHelp(teamId: string) { return this.post<void>(`/api/teams/${teamId}/help-requests/cancel`); }
   markTeamTaskReady(teamId: string, taskItemId: string) { return this.post<void>(`/api/teams/${teamId}/tasks/${taskItemId}/ready`); }
   markTeamTaskReadyByNumber(teamId: string, taskNumber: number) { return this.post<void>(`/api/teams/${teamId}/tasks/by-number/${taskNumber}/ready`); }
 
@@ -120,8 +123,17 @@ export class ApiService {
   ktCompleteReview(activityId: string, submissionId: string, accepted: boolean, result01: number) {
     return this.post<void>(`/api/activities/${activityId}/kt/submissions/${submissionId}/review/complete`, { accepted, result01 });
   }
+  ktOverview(activityId: string) {
+    return this.get<{
+      taskItemId: string; taskCode: string;
+      submissions: { submissionId: string; studentName: string; status: string; readyAt: string | null; solutionUrl: string | null; result01: number }[];
+    }[]>(`/api/activities/${activityId}/kt/overview`);
+  }
 
   // KT (student)
+  ktInfo(activityId: string) {
+    return this.get<{ title: string; conditionsUrl: string | null; status: string }>(`/api/activities/${activityId}/kt/info`);
+  }
   ktAllTasks(activityId: string) { return this.get<KtSlot[]>(`/api/activities/${activityId}/kt/tasks`); }
   ktMarkReady(activityId: string, taskItemId: string) { return this.post<void>(`/api/activities/${activityId}/kt/tasks/${taskItemId}/ready`); }
   ktUnmarkReady(activityId: string, taskItemId: string) { return this.delete<void>(`/api/activities/${activityId}/kt/tasks/${taskItemId}/ready`); }
@@ -161,6 +173,7 @@ export class ApiService {
     return this.post<string>('/api/teaching/courses', { code, title, academicYear });
   }
   deleteCourse(courseId: string) { return this.delete<void>(`/api/teaching/courses/${courseId}`); }
+  removeStudent(courseId: string, studentId: string) { return this.delete<void>(`/api/teaching/courses/${courseId}/students/${studentId}`); }
   addModule(courseId: string, number: number, title: string, startsAt: string, endsAt: string) {
     return this.post<string>(`/api/teaching/courses/${courseId}/modules`, { number, title, startsAt, endsAt });
   }
