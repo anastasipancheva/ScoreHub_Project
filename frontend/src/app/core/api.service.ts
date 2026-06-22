@@ -145,10 +145,32 @@ export class ApiService {
     return this.patch<void>(`/api/activities/${activityId}/kt/tasks/${taskItemId}/solution`, { url });
   }
 
-  // Homework
+  // Дорешка (бывшая ДЗ-сессия)
   submitHomework(body: { activityId: string; taskItemId: string; documentUrl: string; memberUserIds: string[] }) {
     return this.post<{ id: string }>('/api/homework/submissions', body);
   }
+  doreshkaInfo(activityId: string) {
+    return this.get<{
+      activityTitle: string;
+      sources: { sourceActivityId: string; kind: 'homework' | 'lecture'; title: string; tasks: { taskItemId: string; code: string; points: number }[] }[];
+      mySubmissions: { submissionId: string; taskItemId: string; code: string; status: string; timeCoefficient: number; documentUrl: string }[];
+    }>(`/api/activities/${activityId}/doreshka`);
+  }
+  submitDoreshka(activityId: string, taskItemIds: string[], documentUrl: string, memberUserIds: string[]) {
+    return this.post<{ ids: string[] }>(`/api/activities/${activityId}/doreshka/submit`, { taskItemIds, documentUrl, memberUserIds });
+  }
+  homeworkQueue(activityId: string) {
+    return this.get<{
+      submissionId: string; taskItemId: string; taskCode: string; taskTitle: string;
+      memberIds: string[]; memberNames: string[]; submittedAt: string; status: string;
+      timeCoefficient: number; priority: number; documentUrl: string;
+    }[]>(`/api/activities/${activityId}/homework-queue`);
+  }
+  hwStartReview(submissionId: string) { return this.post<void>(`/api/homework/submissions/${submissionId}/review/start`); }
+  hwCompleteReview(submissionId: string, accepted: boolean, defenderCoefficient?: number) {
+    return this.post<void>(`/api/homework/submissions/${submissionId}/review/complete`, { accepted, defenderCoefficient });
+  }
+  hwBackToQueue(submissionId: string) { return this.post<void>(`/api/homework/submissions/${submissionId}/review/back-to-queue`); }
 
   // Assistant applications
   applyAssistant(activityId: string, message?: string) {

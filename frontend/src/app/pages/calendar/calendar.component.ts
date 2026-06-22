@@ -120,12 +120,12 @@ export class CalendarComponent implements OnInit {
   cellClass(a: StudentActivity) {
     if (a.status === 'Finished') return 'bg-[#F3F4F6] text-[#9CA3AF]';
     if (a.type === 2) return 'bg-[#FEF3C7] text-[#D97706]';      // КТ
-    if (a.type === 3) return 'bg-[#F3E8FF] text-[#7C3AED]';      // ДЗ-сессия
+    if (a.type === 3) return 'bg-[#F3E8FF] text-[#7C3AED]';      // Дорешка
     return 'bg-[#EAF2FF] text-[#005BFF]';                          // Лекция
   }
 
   open(a: StudentActivity) {
-    const path = a.type === 2 ? ['/kt', a.id] : ['/lecture', a.id];
+    const path = a.type === 2 ? ['/kt', a.id] : a.type === 3 ? ['/doreshka', a.id] : ['/lecture', a.id];
     this.router.navigate(path);
   }
 }

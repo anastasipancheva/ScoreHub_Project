@@ -5,7 +5,7 @@ export function activityTypeLabel(type: number): string {
   switch (type) {
     case 1: return 'Лекция';
     case 2: return 'КТ';
-    case 3: return 'ДЗ-сессия';
+    case 3: return 'Дорешка';
     default: return 'Занятие';
   }
 }

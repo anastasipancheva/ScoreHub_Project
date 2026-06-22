@@ -389,7 +389,7 @@ public sealed class TeachingController : ApiControllerBase
             .Select(a => new {
                 a.Id, a.Title, a.Type,
                 typeLabel = a.Type == ActivityType.Lecture ? "Лекция"
-                    : a.Type == ActivityType.ControlPoint ? "КТ" : "ДЗ-сессия",
+                    : a.Type == ActivityType.ControlPoint ? "КТ" : "Дорешка",
                 status = a.Status.ToString(),
                 a.StartsAt, a.EndsAt,
                 a.PreLectureVideoUrl,

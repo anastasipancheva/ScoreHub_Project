@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ScoreHub.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using ScoreHub.Infrastructure.Persistence;
 namespace ScoreHub.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ScoreHubDbContext))]
-    partial class ScoreHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260622045321_AddHomeworkDefenderCoefficient")]
+    partial class AddHomeworkDefenderCoefficient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

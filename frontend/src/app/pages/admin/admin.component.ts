@@ -213,7 +213,7 @@ function defaultAcademicYear() {
                             <select [class]="INPUT + ' pr-8'" [(ngModel)]="actType">
                               <option value="1">Лекция</option>
                               <option value="2">КТ</option>
-                              <option value="3">ДЗ-сессия</option>
+                              <option value="3">Дорешка</option>
                             </select>
                           </div>
                           <div>
@@ -362,7 +362,7 @@ function defaultAcademicYear() {
                 }
                 <div>
                   <label class="block text-xs text-[#6B7280] mb-1">
-                    {{ matHwModuleIds.length > 0 ? '📎 Файл с домашними заданиями' : matActivity.typeLabel === 'Лекция' ? '📎 Файл с заданиями для лекции' : '🔗 Ссылка на условия КТ' }}
+                    {{ matActivity.typeLabel === 'Лекция' ? '📎 Файл с заданиями для лекции' : matActivity.typeLabel === 'КТ' ? '🔗 Ссылка на условия КТ' : '📎 Файл с домашними заданиями (дорешка)' }}
                   </label>
                   <input type="url" [class]="INPUT + ' w-full'" placeholder="https://drive.google.com/..."
                     [(ngModel)]="matFileUrl" />
@@ -376,11 +376,13 @@ function defaultAcademicYear() {
                       <p class="text-[10px] text-[#9CA3AF] mt-1">
                         {{ matActivity.typeLabel === 'КТ'
                           ? 'Каждая задача КТ — отдельный блок: студент отмечает её галочкой и прикрепляет решение (файл/ссылка/фото).'
+                          : matActivity.typeLabel === 'Дорешка'
+                          ? 'Это домашки пары. Лекционные задачи студент досдаёт отдельно (берутся из лекций модуля).'
                           : 'Студенты отмечают задачу готовой по номеру (1…N).' }}
                       </p>
                     </div>
-                    <!-- Баллы за задачи — только для лекции (на КТ баллов за задачи нет) -->
-                    @if (matActivity.typeLabel === 'Лекция' && matTaskPoints.length > 0) {
+                    <!-- Баллы за задачи — для лекции и домашек дорешки (на КТ баллов за задачи нет) -->
+                    @if ((matActivity.typeLabel === 'Лекция' || matActivity.typeLabel === 'Дорешка') && matTaskPoints.length > 0) {
                       <div>
                         <label class="block text-xs text-[#6B7280] mb-1">🎯 Баллы за каждую задачу</label>
                         <div class="flex flex-wrap gap-2">
@@ -895,7 +897,7 @@ function defaultAcademicYear() {
                         <select [class]="INPUT + ' w-28'" [(ngModel)]="a.type">
                           <option value="1">Лекция</option>
                           <option value="2">КТ</option>
-                          <option value="3">ДЗ-сессия</option>
+                          <option value="3">Дорешка</option>
                         </select>
                         <input [class]="INPUT + ' flex-1 min-w-32'" [(ngModel)]="a.title" placeholder="Название занятия" />
                         <button (click)="tplRemoveActivity(mi, ai)" class="text-[#EF4444] text-xs">✕</button>
@@ -1295,17 +1297,9 @@ export class AdminComponent implements OnInit {
   }
 
   buildHwMap() {
+    // Дорешка теперь настраивается по-занятийно (домашки = задачи пары + баллы), без группировки по модулю.
     this.hwByModule = new Map();
-    this.nonHwActivities = [];
-    for (const a of this.scheduleActivities) {
-      if (a.typeLabel === 'ДЗ-сессия') {
-        const arr = this.hwByModule.get(a.moduleId) ?? [];
-        arr.push(a);
-        this.hwByModule.set(a.moduleId, arr);
-      } else {
-        this.nonHwActivities.push(a);
-      }
-    }
+    this.nonHwActivities = [...this.scheduleActivities];
   }
 
   async createCourse() {
@@ -1824,7 +1818,7 @@ export class AdminComponent implements OnInit {
     return map[type] ?? 'bg-[#F3F4F6] text-[#6B7280]';
   }
   actTypeLabelNum(type: number) {
-    const map: Record<number, string> = { 1: 'Лекция', 2: 'КТ', 3: 'ДЗ-сессия' };
+    const map: Record<number, string> = { 1: 'Лекция', 2: 'КТ', 3: 'Дорешка' };
     return map[type] ?? 'Занятие';
   }
   fmtDateShort(d: string) { return new Date(d).toLocaleDateString('ru', { day: 'numeric', month: 'short', year: 'numeric' }); }
@@ -1837,7 +1831,7 @@ export class AdminComponent implements OnInit {
     return 'text-[#DC2626] bg-[#FEE2E2]';
   }
   actTypeLabel(type: string) {
-    return type === 'Lecture' ? 'Лекция' : type === 'ControlPoint' ? 'КТ' : 'ДЗ-сессия';
+    return type === 'Lecture' ? 'Лекция' : type === 'ControlPoint' ? 'КТ' : 'Дорешка';
   }
   statusBadge(s: string) {
     const map: Record<string, string> = { Active: 'bg-[#D1FAE5] text-[#059669]', Finished: 'bg-[#F3F4F6] text-[#9CA3AF]', Scheduled: 'bg-[#FEF3C7] text-[#D97706]' };

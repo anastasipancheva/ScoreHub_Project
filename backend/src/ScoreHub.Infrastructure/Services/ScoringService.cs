@@ -224,7 +224,10 @@ public sealed class ScoringService : IScoringService
                 && s.Members.Any(m => m.UserId == studentId))
             .ToListAsync(ct);
 
-        return accepted.Sum(s => s.TaskItem.Points * s.TimeCoefficient);
+        // Балл = базовая стоимость × коэффициент времени (0.75/0.5/1.0) × коэффициент ассистента (0.8–1.2, дефолт 0.8).
+        return accepted.Sum(s => (s.TaskItem.Points > 0 ? s.TaskItem.Points : 1.0m)
+            * s.TimeCoefficient
+            * (s.DefenderCoefficient ?? 0.8m));
     }
 
     private static decimal GetMultiplier(List<KtMapEntry> map, int solved)

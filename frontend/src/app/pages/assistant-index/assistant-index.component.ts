@@ -30,7 +30,7 @@ interface ModuleStat {
       </div>
 
       <!-- Active sessions RIGHT NOW -->
-      @if (activeLectures.length + activeKts.length > 0) {
+      @if (activeLectures.length + activeKts.length + activeDoreshki.length > 0) {
         <div class="space-y-2">
           <div class="flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-[#059669] animate-pulse"></span>
@@ -60,6 +60,19 @@ interface ModuleStat {
                 </div>
               </div>
               <span class="text-xs font-semibold text-white bg-[#D97706] px-3 py-1.5 rounded-lg flex-shrink-0">Войти →</span>
+            </a>
+          }
+          @for (a of activeDoreshki; track a.id) {
+            <a [routerLink]="['/assistant/doreshka', a.id]"
+               class="bg-white border-2 border-[#7C3AED]/30 rounded-xl p-4 flex items-center justify-between hover:border-[#7C3AED]/60 hover:shadow-sm transition-all block">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-[#F3E8FF] flex items-center justify-center text-xl flex-shrink-0">📚</div>
+                <div>
+                  <p class="text-sm font-semibold text-[#1A1A1B]">{{ a.title }}</p>
+                  <p class="text-xs text-[#6B7280]">{{ a.courseCode }} · {{ a.moduleTitle }} · Дорешка</p>
+                </div>
+              </div>
+              <span class="text-xs font-semibold text-white bg-[#7C3AED] px-3 py-1.5 rounded-lg flex-shrink-0">Войти →</span>
             </a>
           }
         </div>
@@ -272,8 +285,9 @@ export class AssistantIndexComponent implements OnInit {
   get isTeacher() { return this.auth.isTeacher(); }
   // Войти в активную пару можно только если занятие одобрено/назначено (препод — везде).
   private canEnter(a: StudentActivity) { return this.isTeacher || this.approvedActivityIds.has(a.id); }
-  get activeLectures() { return this.activities.filter(a => a.status === 'Active' && a.type !== 2 && this.canEnter(a)); }
+  get activeLectures() { return this.activities.filter(a => a.status === 'Active' && a.type === 1 && this.canEnter(a)); }
   get activeKts()      { return this.activities.filter(a => a.status === 'Active' && a.type === 2 && this.canEnter(a)); }
+  get activeDoreshki() { return this.activities.filter(a => a.status === 'Active' && a.type === 3 && this.canEnter(a)); }
   get totalSessions()  { return this.moduleStats.reduce((s, m) => s + m.count, 0); }
 
   // Only show "apply" for activities where application is NOT approved/pending,
@@ -315,7 +329,7 @@ export class AssistantIndexComponent implements OnInit {
             id: s.activityId,
             title: s.activityTitle,
             type: s.activityType === 'ControlPoint' ? 2 : s.activityType === 'HomeworkSession' ? 3 : 1,
-            typeLabel: s.activityType === 'ControlPoint' ? 'КТ' : s.activityType === 'HomeworkSession' ? 'ДЗ-сессия' : 'Лекция',
+            typeLabel: s.activityType === 'ControlPoint' ? 'КТ' : s.activityType === 'HomeworkSession' ? 'Дорешка' : 'Лекция',
             status: s.activityStatus ?? 'Scheduled',
             startsAt: s.activityStartsAt,
             endsAt: s.activityStartsAt,

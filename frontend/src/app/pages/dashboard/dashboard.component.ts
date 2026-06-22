@@ -145,12 +145,6 @@ import { activityTypeIcon, activityTypeIconBg } from '../../core/activity-type';
           </div>
           <p class="text-xs font-semibold text-[#1A1A1B]">Уведомления</p>
         </a>
-        @if (!auth.isAssistant()) {
-          <a routerLink="/homework" class="bg-white rounded-xl border border-[#E5E7EB] p-4 hover:border-[#059669]/30 hover:shadow-sm transition-all block text-center">
-            <div class="w-9 h-9 rounded-xl bg-[#D1FAE5] flex items-center justify-center mb-2 mx-auto text-lg">📖</div>
-            <p class="text-xs font-semibold text-[#1A1A1B]">Домашние задания</p>
-          </a>
-        }
         <a routerLink="/courses" class="bg-white rounded-xl border border-[#E5E7EB] p-4 hover:border-[#D97706]/30 hover:shadow-sm transition-all block text-center">
           <div class="w-9 h-9 rounded-xl bg-[#FEF3C7] flex items-center justify-center mb-2 mx-auto text-lg">📋</div>
           <p class="text-xs font-semibold text-[#1A1A1B]">Курсы</p>
@@ -263,8 +257,9 @@ export class DashboardComponent implements OnInit {
   }
 
   activityHref(a: StudentActivity) {
-    if (this.auth.isAssistant()) return a.type === 2 ? `/assistant/kt/${a.id}` : `/assistant/session/${a.id}`;
-    return a.type === 2 ? `/kt/${a.id}` : `/lecture/${a.id}`;
+    if (this.auth.isAssistant())
+      return a.type === 2 ? `/assistant/kt/${a.id}` : a.type === 3 ? `/assistant/doreshka/${a.id}` : `/assistant/session/${a.id}`;
+    return a.type === 2 ? `/kt/${a.id}` : a.type === 3 ? `/doreshka/${a.id}` : `/lecture/${a.id}`;
   }
 
   actIcon(type: number) { return activityTypeIcon(type); }

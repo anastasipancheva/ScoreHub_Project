@@ -38,12 +38,22 @@ public sealed class HomeworkService : IHomeworkService
         if (activity is null)
             return OpResult<Guid>.Fail("Занятие не найдено.");
 
-        var task = await _db.TaskItems.Include(t => t.TaskSet).FirstOrDefaultAsync(t => t.Id == taskItemId, ct);
-        if (task is null || task.TaskSet.ActivityId != activityId)
-            return OpResult<Guid>.Fail("Задача не относится к этому занятию.");
+        var task = await _db.TaskItems.Include(t => t.TaskSet).ThenInclude(ts => ts.Activity)
+            .FirstOrDefaultAsync(t => t.Id == taskItemId, ct);
+        if (task is null)
+            return OpResult<Guid>.Fail("Задача не найдена.");
+
+        // На «Дорешке» можно сдавать: (а) домашки самой пары; (б) задачи лекций текущего модуля.
+        var sourceActivity = task.TaskSet.Activity;
+        bool isHomeworkTask = sourceActivity.Id == activityId;
+        bool isLectureTaskSameModule = sourceActivity.Type == ActivityType.Lecture
+            && sourceActivity.ModuleId == activity.ModuleId;
+        if (!isHomeworkTask && !isLectureTaskSameModule)
+            return OpResult<Guid>.Fail("На дорешке можно сдавать домашки этой пары или задачи лекций текущего модуля.");
 
         var now = DateTimeOffset.UtcNow;
-        decimal timeCoeff = ComputeTimeCoefficient(activity, now);
+        // Коэффициент времени: домашки — 1.0; задачи лекции — 0.75 в течение недели после лекции, далее 0.5.
+        decimal timeCoeff = isHomeworkTask ? 1.0m : ComputeTimeCoefficient(sourceActivity, now);
 
         var sub = new HomeworkSubmission
         {
@@ -120,6 +130,11 @@ public sealed class HomeworkService : IHomeworkService
                     || s.Status == SubmissionStatus.InReview))
             .ToListAsync(ct);
 
+        var memberIds = subs.SelectMany(s => s.Members.Select(m => m.UserId)).Distinct().ToList();
+        var names = await _db.Users.AsNoTracking()
+            .Where(u => memberIds.Contains(u.Id))
+            .ToDictionaryAsync(u => u.Id, u => u.DisplayName, ct);
+
         var rows = subs.Select(s =>
         {
             int priority = ComputePriority(s, lastLectureEndsAt);
@@ -129,6 +144,7 @@ public sealed class HomeworkService : IHomeworkService
                 s.TaskItem.Code,
                 s.TaskItem.Title,
                 s.Members.Select(m => m.UserId).ToList(),
+                s.Members.Select(m => names.GetValueOrDefault(m.UserId, "?")).ToList(),
                 s.SubmittedAt,
                 s.Status.ToString(),
                 s.TimeCoefficient,
@@ -180,11 +196,16 @@ public sealed class HomeworkService : IHomeworkService
     }
 
     public async Task<OpResult<Unit>> CompleteReview(
-        Guid actorId, Guid submissionId, bool accepted, CancellationToken ct = default)
+        Guid actorId, Guid submissionId, bool accepted, decimal? defenderCoefficient, CancellationToken ct = default)
     {
         var actor = await _db.Users.FirstOrDefaultAsync(u => u.Id == actorId, ct);
         if (actor is null || !CanReview(actor.Role))
             return OpResult<Unit>.Fail("Недостаточно прав.");
+
+        // Коэффициент ассистента: 0.8–1.2. По умолчанию 0.8 (студент не присутствовал на паре).
+        var coef = defenderCoefficient ?? 0.8m;
+        if (coef is < 0.8m or > 1.2m)
+            return OpResult<Unit>.Fail("Коэффициент должен быть от 0.8 до 1.2.");
 
         var sub = await _db.HomeworkSubmissions
             .Include(s => s.Members)
@@ -194,6 +215,7 @@ public sealed class HomeworkService : IHomeworkService
 
         sub.Status = accepted ? SubmissionStatus.Accepted : SubmissionStatus.Rejected;
         sub.Result01 = accepted ? 1 : 0;
+        sub.DefenderCoefficient = accepted ? coef : null;
         sub.ReviewedAt = DateTimeOffset.UtcNow;
         await _db.SaveChangesAsync(ct);
 

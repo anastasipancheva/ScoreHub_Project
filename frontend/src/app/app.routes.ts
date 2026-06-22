@@ -55,16 +55,20 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/profile/profile.component').then(m => m.ProfileComponent),
       },
       {
-        path: 'homework',
-        loadComponent: () => import('./pages/homework/homework.component').then(m => m.HomeworkComponent),
-      },
-      {
         path: 'lecture/:id',
         loadComponent: () => import('./pages/lecture-detail/lecture-detail.component').then(m => m.LectureDetailComponent),
       },
       {
         path: 'kt/:id',
         loadComponent: () => import('./pages/kt-detail/kt-detail.component').then(m => m.KtDetailComponent),
+      },
+      {
+        path: 'doreshka/:id',
+        loadComponent: () => import('./pages/homework/homework.component').then(m => m.HomeworkComponent),
+      },
+      {
+        path: 'assistant/doreshka/:id',
+        loadComponent: () => import('./pages/assistant-doreshka/assistant-doreshka.component').then(m => m.AssistantDoreshkaComponent),
       },
       {
         path: 'assistant',

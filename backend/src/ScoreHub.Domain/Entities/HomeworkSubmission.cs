@@ -27,5 +27,8 @@ public sealed class HomeworkSubmission
     /// <summary>Computed at submission time: 1.0 / 0.75 / 0.5 based on deadline rules.</summary>
     public decimal TimeCoefficient { get; set; } = 1.0m;
 
+    /// <summary>Коэффициент ассистента при приёме (0.8–1.2). По умолчанию 0.8 (не пришёл на пару).</summary>
+    public decimal? DefenderCoefficient { get; set; }
+
     public List<HomeworkSubmissionMember> Members { get; set; } = new();
 }

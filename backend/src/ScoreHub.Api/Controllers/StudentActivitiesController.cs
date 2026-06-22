@@ -37,7 +37,7 @@ public sealed class StudentActivitiesController : ApiControllerBase
                 a.Type,
                 typeLabel = a.Type == ActivityType.Lecture ? "Лекция"
                     : a.Type == ActivityType.ControlPoint ? "КТ"
-                    : "ДЗ-сессия",
+                    : "Дорешка",
                 status = a.Status.ToString(),
                 a.StartsAt,
                 a.EndsAt,
@@ -72,7 +72,7 @@ public sealed class StudentActivitiesController : ApiControllerBase
                 a.Type,
                 typeLabel = a.Type == ActivityType.Lecture ? "Лекция"
                     : a.Type == ActivityType.ControlPoint ? "КТ"
-                    : "ДЗ-сессия",
+                    : "Дорешка",
                 status = a.Status.ToString(),
                 a.StartsAt,
                 a.EndsAt,
