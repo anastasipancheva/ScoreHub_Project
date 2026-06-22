@@ -896,6 +896,38 @@ public sealed class TeachingController : ApiControllerBase
         return Ok();
     }
 
+    /// <summary>Карта коэффициента КТ: сколько задач решено → коэффициент модуля.</summary>
+    [HttpGet("courses/{courseId:guid}/kt-coef")]
+    public async Task<IActionResult> GetKtCoef(Guid courseId, CancellationToken ct)
+    {
+        var json = await _db.Courses.Where(c => c.Id == courseId).Select(c => c.KtMultiplierMapJson).FirstOrDefaultAsync(ct);
+        if (json is null) return NotFound();
+        var map = System.Text.Json.JsonSerializer.Deserialize<List<KtCoefRowDto>>(json) ?? new();
+        return Ok(map.OrderBy(t => t.tasks_solved));
+    }
+
+    /// <summary>Задать карту коэффициента КТ (решено задач → коэффициент).</summary>
+    [HttpPut("courses/{courseId:guid}/kt-coef")]
+    public async Task<IActionResult> SetKtCoef(Guid courseId, [FromBody] KtCoefDto dto, CancellationToken ct)
+    {
+        var course = await _db.Courses.FirstOrDefaultAsync(c => c.Id == courseId, ct);
+        if (course is null) return NotFound();
+        if (dto.Map is null || dto.Map.Count == 0) return BadRequest(new { error = "Карта коэффициентов пуста." });
+
+        var clean = dto.Map
+            .Where(r => r.tasks_solved >= 0 && r.multiplier >= 0)
+            .GroupBy(r => r.tasks_solved).Select(g => g.First())
+            .OrderBy(r => r.tasks_solved)
+            .Select(r => new KtCoefRowDto(r.tasks_solved, r.multiplier))
+            .ToList();
+        course.KtMultiplierMapJson = System.Text.Json.JsonSerializer.Serialize(clean);
+        await _db.SaveChangesAsync(ct);
+        return Ok();
+    }
+
+    public sealed record KtCoefRowDto(int tasks_solved, decimal multiplier);
+    public sealed record KtCoefDto(List<KtCoefRowDto> Map);
+
     public sealed record GradeRowDto(decimal min, string mark);
     public sealed record GradingDto(List<GradeRowDto> Table);
 

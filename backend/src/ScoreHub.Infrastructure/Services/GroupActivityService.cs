@@ -429,9 +429,9 @@ public sealed class GroupActivityService : IGroupActivityService
         if (result01 is not (0 or 1))
             return OpResult<Unit>.Fail("result01 должен быть 0 или 1.");
 
-        // Коэффициент защитника: от 1.0 до 1.2 (начисляется только тому, кто сдавал).
-        if (defenderCoefficient is < 1.0m or > 1.2m)
-            return OpResult<Unit>.Fail("Коэффициент защитника должен быть от 1.0 до 1.2.");
+        // Коэффициент защитника: от 0.8 до 1.2 (начисляется только тому, кто сдавал).
+        if (defenderCoefficient is < 0.8m or > 1.2m)
+            return OpResult<Unit>.Fail("Коэффициент защитника должен быть от 0.8 до 1.2.");
 
         var sub = await _db.TaskSubmissions
             .Include(s => s.Team!)

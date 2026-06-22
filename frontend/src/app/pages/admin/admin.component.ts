@@ -379,7 +379,8 @@ function defaultAcademicYear() {
                           : 'Студенты отмечают задачу готовой по номеру (1…N).' }}
                       </p>
                     </div>
-                    @if (matTaskPoints.length > 0) {
+                    <!-- Баллы за задачи — только для лекции (на КТ баллов за задачи нет) -->
+                    @if (matActivity.typeLabel === 'Лекция' && matTaskPoints.length > 0) {
                       <div>
                         <label class="block text-xs text-[#6B7280] mb-1">🎯 Баллы за каждую задачу</label>
                         <div class="flex flex-wrap gap-2">
@@ -392,6 +393,32 @@ function defaultAcademicYear() {
                           }
                         </div>
                         <p class="text-[10px] text-[#9CA3AF] mt-1">По умолчанию каждая задача — 1 балл.</p>
+                      </div>
+                    }
+
+                    <!-- КТ: карта коэффициента (решено задач → коэффициент модуля) -->
+                    @if (matActivity.typeLabel === 'КТ') {
+                      <div class="border-t border-[#F3F4F6] pt-3">
+                        <label class="block text-xs text-[#6B7280] mb-1">📊 Коэффициент за КТ (по числу решённых задач)</label>
+                        <p class="text-[10px] text-[#9CA3AF] mb-2">Балл модуля умножается на этот коэффициент. Задаётся на весь курс.</p>
+                        <div class="space-y-1.5">
+                          @for (row of ktCoefRows; track $index) {
+                            <div class="flex items-center gap-2">
+                              <span class="text-xs text-[#6B7280] w-28">решено задач:</span>
+                              <input type="number" min="0" [class]="INPUT + ' w-16 h-8 text-xs'" [(ngModel)]="row.tasks_solved" />
+                              <span class="text-xs text-[#6B7280]">коэф.:</span>
+                              <input type="number" min="0" step="0.1" [class]="INPUT + ' w-20 h-8 text-xs'" [(ngModel)]="row.multiplier" />
+                              <button (click)="removeKtCoefRow($index)" class="text-xs text-[#DC2626] hover:bg-[#FEE2E2] px-2 py-1 rounded">✕</button>
+                            </div>
+                          }
+                        </div>
+                        <div class="flex items-center gap-2 mt-2">
+                          <button (click)="addKtCoefRow()" class="text-xs text-[#005BFF] hover:bg-[#EAF2FF] px-2 py-1 rounded">+ строка</button>
+                          <button (click)="saveKtCoef()" [disabled]="ktCoefSaving"
+                            class="text-xs bg-[#005BFF] text-white px-3 py-1.5 rounded-lg hover:bg-[#0050E6] disabled:opacity-50">
+                            {{ ktCoefSaving ? '...' : 'Сохранить коэффициенты' }}
+                          </button>
+                        </div>
                       </div>
                     }
                   </div>
@@ -1108,6 +1135,9 @@ export class AdminComponent implements OnInit {
   matTaskPoints: number[] = [];
   matSaving = false;
   matHwModuleIds: string[] = [];
+  // КТ: карта коэффициента (решено задач → коэффициент модуля), на уровне курса
+  ktCoefRows: { tasks_solved: number; multiplier: number }[] = [];
+  ktCoefSaving = false;
   nonHwActivities: TeacherActivity[] = [];
   hwByModule: Map<string, TeacherActivity[]> = new Map();
 
@@ -1393,6 +1423,30 @@ export class AdminComponent implements OnInit {
       if (pts && pts.length > 0) { this.matTaskPoints = pts.map(Number); this.matTaskCount = String(pts.length); }
       else { this.syncTaskPoints(); }
     }).catch(() => this.syncTaskPoints());
+    // Для КТ подгружаем карту коэффициента курса.
+    if (act.typeLabel === 'КТ' && this.selected) {
+      this.api.getKtCoef(this.selected)
+        .then(map => this.ktCoefRows = (map ?? []).map(r => ({ tasks_solved: Number(r.tasks_solved), multiplier: Number(r.multiplier) })))
+        .catch(() => this.ktCoefRows = []);
+    }
+  }
+
+  addKtCoefRow() {
+    const nextSolved = this.ktCoefRows.length;
+    this.ktCoefRows = [...this.ktCoefRows, { tasks_solved: nextSolved, multiplier: 0 }];
+  }
+  removeKtCoefRow(i: number) { this.ktCoefRows = this.ktCoefRows.filter((_, idx) => idx !== i); }
+  async saveKtCoef() {
+    if (!this.selected) return;
+    const map = this.ktCoefRows
+      .map(r => ({ tasks_solved: Math.max(0, parseInt(String(r.tasks_solved)) || 0), multiplier: Math.max(0, Number(r.multiplier) || 0) }));
+    if (map.length === 0) { this.toast.error('Добавьте хотя бы одну строку'); return; }
+    this.ktCoefSaving = true;
+    try {
+      await this.api.setKtCoef(this.selected, map);
+      this.toast.success('Коэффициенты КТ сохранены');
+    } catch (e: unknown) { this.toast.error(e instanceof Error ? e.message : 'Ошибка'); }
+    finally { this.ktCoefSaving = false; }
   }
 
   // Подгоняет длину массива баллов под «количество задач» (новые — по 1 баллу).

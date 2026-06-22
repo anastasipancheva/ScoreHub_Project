@@ -45,6 +45,10 @@ export class ApiService {
   setGrading(courseId: string, table: { min: number; mark: string }[]) {
     return this.put<void>(`/api/teaching/courses/${courseId}/grading`, { table });
   }
+  getKtCoef(courseId: string) { return this.get<{ tasks_solved: number; multiplier: number }[]>(`/api/teaching/courses/${courseId}/kt-coef`); }
+  setKtCoef(courseId: string, map: { tasks_solved: number; multiplier: number }[]) {
+    return this.put<void>(`/api/teaching/courses/${courseId}/kt-coef`, { map });
+  }
   courseStudents(courseId: string) {
     return this.get<{ id: string; email: string; displayName: string; role: string; enrolledAt: string }[]>
       (`/api/courses/${courseId}/students`);

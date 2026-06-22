@@ -77,10 +77,10 @@ const STATUS_STYLE: Record<string, string> = {
               </div>
 
               @if (coefFor === sub.submissionId) {
-                <!-- Accept: defender coefficient 1.0–1.2 -->
+                <!-- Accept: defender coefficient 0.8–1.2 -->
                 <div class="flex items-center gap-2 bg-[#F0FDF4] rounded-lg p-2">
-                  <label class="text-xs text-[#059669]">Коэф. защитнику (1.0–1.2):</label>
-                  <input type="number" step="0.1" min="1" max="1.2" [(ngModel)]="coefValue"
+                  <label class="text-xs text-[#059669]">Коэф. защитнику (0.8–1.2):</label>
+                  <input type="number" step="0.1" min="0.8" max="1.2" [(ngModel)]="coefValue"
                     class="h-8 w-20 px-2 rounded-lg border border-[#E5E7EB] text-sm outline-none focus:border-[#059669]" />
                   <button (click)="confirmAccept(sub)"
                     class="h-8 px-3 rounded-lg bg-[#059669] text-white text-xs font-semibold hover:bg-[#047857] transition-colors">Подтвердить</button>
@@ -178,7 +178,7 @@ export class AssistantSessionComponent implements OnInit, OnDestroy {
 
   async confirmAccept(sub: TeamSubmission) {
     const coef = parseFloat(this.coefValue);
-    if (isNaN(coef) || coef < 1 || coef > 1.2) { this.toast.error('Коэффициент должен быть от 1.0 до 1.2'); return; }
+    if (isNaN(coef) || coef < 0.8 || coef > 1.2) { this.toast.error('Коэффициент должен быть от 0.8 до 1.2'); return; }
     try {
       await this.api.completeReview(sub.submissionId, true, 1, coef);
       this.toast.success('Задача принята');

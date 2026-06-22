@@ -84,8 +84,9 @@ public sealed class ControlPointService : IControlPointService
 
         await _db.SaveChangesAsync(ct);
 
-        var assistants = await _db.TaskAssistants
-            .Where(x => x.TaskItemId == taskItemId)
+        // Закрепления за задачей нет — уведомляем всех ассистентов занятия.
+        var assistants = await _db.ActivityAssistants
+            .Where(x => x.ActivityId == activityId)
             .Select(x => x.AssistantId)
             .ToListAsync(ct);
 
@@ -112,10 +113,7 @@ public sealed class ControlPointService : IControlPointService
         if (actor is null || !CanAssist(actor.Role))
             return OpResult<IReadOnlyList<KtQueueRow>>.Fail("Недостаточно прав.");
 
-        if (!await _db.TaskAssistants.AnyAsync(x => x.TaskItemId == taskItemId && x.AssistantId == actorId, ct)
-            && actor.Role is not (UserRole.Teacher or UserRole.Admin))
-            return OpResult<IReadOnlyList<KtQueueRow>>.Fail("Вы не закреплены за этой задачей.");
-
+        // Ассистенты не закреплены за конкретной задачей — любой ассистент видит очередь любой задачи.
         var activity = await _db.Activities.AsNoTracking().FirstOrDefaultAsync(a => a.Id == activityId, ct);
         if (activity is null || activity.Type != ActivityType.ControlPoint)
             return OpResult<IReadOnlyList<KtQueueRow>>.Fail("Неверное занятие.");
@@ -142,10 +140,7 @@ public sealed class ControlPointService : IControlPointService
         if (actor is null || !CanAssist(actor.Role))
             return OpResult<Unit>.Fail("Недостаточно прав.");
 
-        if (!await _db.TaskAssistants.AnyAsync(x => x.TaskItemId == taskItemId && x.AssistantId == actorId, ct)
-            && actor.Role is not (UserRole.Teacher or UserRole.Admin))
-            return OpResult<Unit>.Fail("Вы не закреплены за этой задачей.");
-
+        // Любой ассистент может вызвать следующего по любой задаче — закрепления нет.
         var activity = await _db.Activities.FirstOrDefaultAsync(a => a.Id == activityId, ct);
         if (activity is null || activity.Type != ActivityType.ControlPoint)
             return OpResult<Unit>.Fail("Неверное занятие.");
@@ -228,18 +223,7 @@ public sealed class ControlPointService : IControlPointService
         if (sub.Status != SubmissionStatus.InReview)
             return OpResult<Unit>.Fail("Сдача не на проверке.");
 
-        var allowed = actor.Role is UserRole.Teacher or UserRole.Admin
-            || await _db.TaskAssistants.AnyAsync(
-                x => x.TaskItemId == sub.TaskItemId && x.AssistantId == actorId,
-                ct);
-        if (!allowed)
-            return OpResult<Unit>.Fail("Нет прав завершать приём по этой задаче.");
-
-        var isReviewer = sub.ReviewerId == actorId;
-        var isElevated = actor.Role is UserRole.Teacher or UserRole.Admin;
-        if (!isReviewer && !isElevated)
-            return OpResult<Unit>.Fail("Только вызвавший ассистент (или преподаватель) может завершить приём.");
-
+        // Закрепления ассистента за задачей нет: любой ассистент/преподаватель может завершить приём.
         sub.Status = accepted ? SubmissionStatus.Accepted : SubmissionStatus.Rejected;
         sub.Result01 = accepted ? 1 : 0;
         sub.DefenderCoefficient = defenderCoefficient;
