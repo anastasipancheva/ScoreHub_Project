@@ -56,7 +56,7 @@ import { ApiService } from '../core/api.service';
                 title="Выйти">⏏</button>
             </div>
             <!-- Mobile hamburger -->
-            <button (click)="mobileMenuOpen.update(v => !v)"
+            <button (click)="mobileMenuOpen.set(!mobileMenuOpen())"
               class="sm:hidden flex items-center justify-center w-8 h-8 rounded-lg text-[#6B7280] hover:bg-[#F3F4F6] transition-colors text-base">
               {{ mobileMenuOpen() ? '✕' : '☰' }}
             </button>
