@@ -30,10 +30,10 @@ function defaultAcademicYear() {
       <h1 class="text-lg font-semibold text-[#1A1A1B]">Управление</h1>
 
       <!-- Tab bar -->
-      <div class="flex flex-wrap gap-1 bg-[#F3F4F6] rounded-lg p-1 w-fit">
+      <div class="flex overflow-x-auto gap-1 bg-[#F3F4F6] rounded-lg p-1 scrollbar-hide">
         @for (t of tabs; track t.key) {
           <button (click)="setTab(t.key)"
-            class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
+            class="px-3 sm:px-4 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0"
             [class]="tab === t.key ? 'bg-white text-[#005BFF] shadow-sm' : 'text-[#6B7280] hover:text-[#1A1A1B]'">
             {{ t.label }}
           </button>
@@ -64,20 +64,22 @@ function defaultAcademicYear() {
         <div class="space-y-5">
           <div class="bg-white rounded-xl border border-[#E5E7EB] p-5">
             <p class="text-xs font-semibold text-[#6B7280] uppercase tracking-wide mb-3">Создать курс</p>
-            <div class="flex flex-wrap gap-3 items-end">
-              <div>
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 items-end">
+              <div class="col-span-1">
                 <label class="block text-xs text-[#6B7280] mb-1">Код</label>
-                <input [class]="INPUT + ' w-24'" [(ngModel)]="newCode" placeholder="MKN2" />
+                <input [class]="INPUT + ' w-full sm:w-24'" [(ngModel)]="newCode" placeholder="MKN2" />
               </div>
-              <div>
-                <label class="block text-xs text-[#6B7280] mb-1">Название</label>
-                <input [class]="INPUT + ' w-56'" [(ngModel)]="newTitle" placeholder="Математика для КН ч.2" />
-              </div>
-              <div>
+              <div class="col-span-1">
                 <label class="block text-xs text-[#6B7280] mb-1">Учебный год</label>
-                <input [class]="INPUT + ' w-28'" [(ngModel)]="newYear" />
+                <input [class]="INPUT + ' w-full sm:w-28'" [(ngModel)]="newYear" />
               </div>
-              <button (click)="createCourse()" [class]="BTN_PRIMARY">➕ Создать</button>
+              <div class="col-span-2">
+                <label class="block text-xs text-[#6B7280] mb-1">Название</label>
+                <input [class]="INPUT + ' w-full sm:w-56'" [(ngModel)]="newTitle" placeholder="Математика для КН ч.2" />
+              </div>
+              <div class="col-span-2 sm:col-span-1">
+                <button (click)="createCourse()" [class]="BTN_PRIMARY + ' w-full sm:w-auto'">➕ Создать</button>
+              </div>
             </div>
           </div>
 
@@ -115,24 +117,26 @@ function defaultAcademicYear() {
         <div class="space-y-5">
           <div class="bg-white rounded-xl border border-[#E5E7EB] p-5">
             <p class="text-xs font-semibold text-[#6B7280] uppercase tracking-wide mb-3">Добавить модуль</p>
-            <div class="flex flex-wrap gap-3 items-end">
-              <div>
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 items-end">
+              <div class="col-span-1">
                 <label class="block text-xs text-[#6B7280] mb-1">Номер</label>
-                <input [class]="INPUT + ' w-16'" type="number" [(ngModel)]="moduleNum" />
+                <input [class]="INPUT + ' w-full sm:w-16'" type="number" [(ngModel)]="moduleNum" />
               </div>
-              <div>
+              <div class="col-span-1">
                 <label class="block text-xs text-[#6B7280] mb-1">Название</label>
-                <input [class]="INPUT + ' w-44'" [(ngModel)]="moduleTitle" placeholder="Модуль 1" />
+                <input [class]="INPUT + ' w-full sm:w-44'" [(ngModel)]="moduleTitle" placeholder="Модуль 1" />
               </div>
-              <div>
+              <div class="col-span-1">
                 <label class="block text-xs text-[#6B7280] mb-1">Начало</label>
-                <input [class]="INPUT" type="date" [(ngModel)]="moduleStart" />
+                <input [class]="INPUT + ' w-full'" type="date" [(ngModel)]="moduleStart" />
               </div>
-              <div>
+              <div class="col-span-1">
                 <label class="block text-xs text-[#6B7280] mb-1">Конец</label>
-                <input [class]="INPUT" type="date" [(ngModel)]="moduleEnd" />
+                <input [class]="INPUT + ' w-full'" type="date" [(ngModel)]="moduleEnd" />
               </div>
-              <button (click)="addModule()" [class]="BTN_PRIMARY">➕ Добавить</button>
+              <div class="col-span-2 sm:col-span-1">
+                <button (click)="addModule()" [class]="BTN_PRIMARY + ' w-full sm:w-auto'">➕ Добавить</button>
+              </div>
             </div>
           </div>
 
@@ -207,29 +211,31 @@ function defaultAcademicYear() {
                     <!-- Inline add-activity form -->
                     @if (selectedModuleId === m.id) {
                       <div class="px-4 py-3 border-b border-[#E5E7EB] bg-[#FAFBFF]">
-                        <div class="flex flex-wrap gap-2 items-end">
-                          <div>
+                        <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 items-end">
+                          <div class="col-span-1">
                             <label class="block text-xs text-[#6B7280] mb-1">Тип</label>
-                            <select [class]="INPUT + ' pr-8'" [(ngModel)]="actType">
+                            <select [class]="INPUT + ' w-full sm:w-auto pr-8'" [(ngModel)]="actType">
                               <option value="1">Лекция</option>
                               <option value="2">КТ</option>
-                              <option value="3">Дорешка</option>
+                              <option value="3">ДЗ-сессия</option>
                             </select>
                           </div>
-                          <div>
+                          <div class="col-span-1">
                             <label class="block text-xs text-[#6B7280] mb-1">Название</label>
-                            <input [class]="INPUT + ' w-40'" [(ngModel)]="actTitle" placeholder="Лекция 1" />
+                            <input [class]="INPUT + ' w-full sm:w-40'" [(ngModel)]="actTitle" placeholder="Лекция 1" />
                           </div>
-                          <div>
+                          <div class="col-span-1">
                             <label class="block text-xs text-[#6B7280] mb-1">Начало</label>
-                            <input [class]="INPUT" type="datetime-local" [(ngModel)]="actStart" />
+                            <input [class]="INPUT + ' w-full'" type="datetime-local" [(ngModel)]="actStart" />
                           </div>
-                          <div>
+                          <div class="col-span-1">
                             <label class="block text-xs text-[#6B7280] mb-1">Конец</label>
-                            <input [class]="INPUT" type="datetime-local" [(ngModel)]="actEnd" />
+                            <input [class]="INPUT + ' w-full'" type="datetime-local" [(ngModel)]="actEnd" />
                           </div>
-                          <button (click)="addActivity(m.id)" [class]="BTN_PRIMARY">➕ Добавить</button>
-                          <button (click)="selectedModuleId = null" [class]="BTN_GHOST">Отмена</button>
+                          <div class="col-span-2 flex gap-2">
+                            <button (click)="addActivity(m.id)" [class]="BTN_PRIMARY + ' flex-1 sm:flex-none'">➕ Добавить</button>
+                            <button (click)="selectedModuleId = null" [class]="BTN_GHOST + ' flex-1 sm:flex-none'">Отмена</button>
+                          </div>
                         </div>
                       </div>
                     }
@@ -362,27 +368,20 @@ function defaultAcademicYear() {
                 }
                 <div>
                   <label class="block text-xs text-[#6B7280] mb-1">
-                    {{ matActivity.typeLabel === 'Лекция' ? '📎 Файл с заданиями для лекции' : matActivity.typeLabel === 'КТ' ? '🔗 Ссылка на условия КТ' : '📎 Файл с домашними заданиями (дорешка)' }}
+                    📎 {{ matHwModuleIds.length > 0 ? 'Файл с домашними заданиями' : matActivity.typeLabel === 'Лекция' ? 'Файл с заданиями для лекции' : 'Файл с заданиями КТ' }}
                   </label>
                   <input type="url" [class]="INPUT + ' w-full'" placeholder="https://drive.google.com/..."
                     [(ngModel)]="matFileUrl" />
                 </div>
-                @if (matHwModuleIds.length === 0) {
+                @if (matHwModuleIds.length === 0 && matActivity.typeLabel !== 'КТ') {
                   <div class="space-y-3">
                     <div>
                       <label class="block text-xs text-[#6B7280] mb-1">🔢 Количество задач</label>
                       <input type="number" min="0" [class]="INPUT + ' w-32'" placeholder="напр. 6"
                         [(ngModel)]="matTaskCount" (ngModelChange)="syncTaskPoints()" />
-                      <p class="text-[10px] text-[#9CA3AF] mt-1">
-                        {{ matActivity.typeLabel === 'КТ'
-                          ? 'Каждая задача КТ — отдельный блок: студент отмечает её галочкой и прикрепляет решение (файл/ссылка/фото).'
-                          : matActivity.typeLabel === 'Дорешка'
-                          ? 'Это домашки пары. Лекционные задачи студент досдаёт отдельно (берутся из лекций модуля).'
-                          : 'Студенты отмечают задачу готовой по номеру (1…N).' }}
-                      </p>
+                      <p class="text-[10px] text-[#9CA3AF] mt-1">Студенты отмечают задачу готовой по номеру (1…N).</p>
                     </div>
-                    <!-- Баллы за задачи — для лекции и домашек дорешки (на КТ баллов за задачи нет) -->
-                    @if ((matActivity.typeLabel === 'Лекция' || matActivity.typeLabel === 'Дорешка') && matTaskPoints.length > 0) {
+                    @if (matTaskPoints.length > 0) {
                       <div>
                         <label class="block text-xs text-[#6B7280] mb-1">🎯 Баллы за каждую задачу</label>
                         <div class="flex flex-wrap gap-2">
@@ -395,32 +394,6 @@ function defaultAcademicYear() {
                           }
                         </div>
                         <p class="text-[10px] text-[#9CA3AF] mt-1">По умолчанию каждая задача — 1 балл.</p>
-                      </div>
-                    }
-
-                    <!-- КТ: карта коэффициента (решено задач → коэффициент модуля) -->
-                    @if (matActivity.typeLabel === 'КТ') {
-                      <div class="border-t border-[#F3F4F6] pt-3">
-                        <label class="block text-xs text-[#6B7280] mb-1">📊 Коэффициент за КТ (по числу решённых задач)</label>
-                        <p class="text-[10px] text-[#9CA3AF] mb-2">Балл модуля умножается на этот коэффициент. Задаётся на весь курс.</p>
-                        <div class="space-y-1.5">
-                          @for (row of ktCoefRows; track $index) {
-                            <div class="flex items-center gap-2">
-                              <span class="text-xs text-[#6B7280] w-28">решено задач:</span>
-                              <input type="number" min="0" [class]="INPUT + ' w-16 h-8 text-xs'" [(ngModel)]="row.tasks_solved" />
-                              <span class="text-xs text-[#6B7280]">коэф.:</span>
-                              <input type="number" min="0" step="0.1" [class]="INPUT + ' w-20 h-8 text-xs'" [(ngModel)]="row.multiplier" />
-                              <button (click)="removeKtCoefRow($index)" class="text-xs text-[#DC2626] hover:bg-[#FEE2E2] px-2 py-1 rounded">✕</button>
-                            </div>
-                          }
-                        </div>
-                        <div class="flex items-center gap-2 mt-2">
-                          <button (click)="addKtCoefRow()" class="text-xs text-[#005BFF] hover:bg-[#EAF2FF] px-2 py-1 rounded">+ строка</button>
-                          <button (click)="saveKtCoef()" [disabled]="ktCoefSaving"
-                            class="text-xs bg-[#005BFF] text-white px-3 py-1.5 rounded-lg hover:bg-[#0050E6] disabled:opacity-50">
-                            {{ ktCoefSaving ? '...' : 'Сохранить коэффициенты' }}
-                          </button>
-                        </div>
                       </div>
                     }
                   </div>
@@ -487,13 +460,7 @@ function defaultAcademicYear() {
                             <p class="text-sm font-medium text-[#1A1A1B]">{{ u.displayName }}</p>
                             <p class="text-xs text-[#6B7280]">{{ u.email }}</p>
                           </div>
-                          <div class="flex items-center gap-2">
-                            <span class="text-xs text-[#059669] bg-[#D1FAE5] px-2 py-0.5 rounded-full">Студент</span>
-                            <button (click)="removeStudent(u.id, u.displayName)"
-                              class="text-xs text-[#DC2626] hover:bg-[#FEE2E2] px-2 py-1 rounded-lg transition-colors">
-                              Исключить
-                            </button>
-                          </div>
+                          <span class="text-xs text-[#059669] bg-[#D1FAE5] px-2 py-0.5 rounded-full">Студент</span>
                         </div>
                       }
                     </div>
@@ -742,10 +709,10 @@ function defaultAcademicYear() {
         <div class="space-y-5">
           <div class="bg-white rounded-xl border border-[#E5E7EB] p-5">
             <p class="text-xs font-semibold text-[#6B7280] uppercase tracking-wide mb-3">Команды (только для лекций)</p>
-            <div class="flex flex-wrap gap-3 items-end">
-              <div>
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 items-end">
+              <div class="col-span-2">
                 <label class="block text-xs text-[#6B7280] mb-1">Занятие</label>
-                <select [class]="INPUT + ' pr-8 min-w-60'"
+                <select [class]="INPUT + ' w-full pr-8'"
                   [(ngModel)]="teamsActivityId"
                   (ngModelChange)="onTeamsActivityChange($event)">
                   <option value="">— выберите занятие —</option>
@@ -754,13 +721,15 @@ function defaultAcademicYear() {
                   }
                 </select>
               </div>
-              <div>
+              <div class="col-span-1">
                 <label class="block text-xs text-[#6B7280] mb-1">Размер команды</label>
-                <input [class]="INPUT + ' w-20'" type="number" min="2" max="10" [(ngModel)]="teamSize" />
+                <input [class]="INPUT + ' w-full sm:w-20'" type="number" min="2" max="10" [(ngModel)]="teamSize" />
               </div>
-              <button (click)="generateTeams()" [disabled]="generating || !teamsActivityId" [class]="BTN_PRIMARY">
-                {{ generating ? '⏳ Генерация...' : '👥 Сгенерировать' }}
-              </button>
+              <div class="col-span-1 flex items-end">
+                <button (click)="generateTeams()" [disabled]="generating || !teamsActivityId" [class]="BTN_PRIMARY + ' w-full sm:w-auto'">
+                  {{ generating ? '⏳ Генерация...' : '👥 Сгенерировать' }}
+                </button>
+              </div>
             </div>
             <p class="text-xs text-[#9CA3AF] mt-2">
               Авто-генерация: змейка по списку записанных студентов (текущие команды заменяются).
@@ -897,7 +866,7 @@ function defaultAcademicYear() {
                         <select [class]="INPUT + ' w-28'" [(ngModel)]="a.type">
                           <option value="1">Лекция</option>
                           <option value="2">КТ</option>
-                          <option value="3">Дорешка</option>
+                          <option value="3">ДЗ-сессия</option>
                         </select>
                         <input [class]="INPUT + ' flex-1 min-w-32'" [(ngModel)]="a.title" placeholder="Название занятия" />
                         <button (click)="tplRemoveActivity(mi, ai)" class="text-[#EF4444] text-xs">✕</button>
@@ -1137,9 +1106,6 @@ export class AdminComponent implements OnInit {
   matTaskPoints: number[] = [];
   matSaving = false;
   matHwModuleIds: string[] = [];
-  // КТ: карта коэффициента (решено задач → коэффициент модуля), на уровне курса
-  ktCoefRows: { tasks_solved: number; multiplier: number }[] = [];
-  ktCoefSaving = false;
   nonHwActivities: TeacherActivity[] = [];
   hwByModule: Map<string, TeacherActivity[]> = new Map();
 
@@ -1276,16 +1242,6 @@ export class AdminComponent implements OnInit {
     try { this.courseStudents = await this.api.courseStudents(this.selected); } catch {}
   }
 
-  async removeStudent(studentId: string, name: string) {
-    if (!this.selected) return;
-    if (!confirm(`Исключить студента «${name}» с курса? Он будет снят со всех команд этого курса.`)) return;
-    try {
-      await this.api.removeStudent(this.selected, studentId);
-      this.toast.success('Студент исключён');
-      this.loadStudents();
-    } catch (e: unknown) { this.toast.error(e instanceof Error ? e.message : 'Ошибка'); }
-  }
-
   async loadSchedule() {
     if (!this.selected) return;
     this.scheduleLoading = true;
@@ -1297,9 +1253,17 @@ export class AdminComponent implements OnInit {
   }
 
   buildHwMap() {
-    // Дорешка теперь настраивается по-занятийно (домашки = задачи пары + баллы), без группировки по модулю.
     this.hwByModule = new Map();
-    this.nonHwActivities = [...this.scheduleActivities];
+    this.nonHwActivities = [];
+    for (const a of this.scheduleActivities) {
+      if (a.typeLabel === 'ДЗ-сессия') {
+        const arr = this.hwByModule.get(a.moduleId) ?? [];
+        arr.push(a);
+        this.hwByModule.set(a.moduleId, arr);
+      } else {
+        this.nonHwActivities.push(a);
+      }
+    }
   }
 
   async createCourse() {
@@ -1417,30 +1381,6 @@ export class AdminComponent implements OnInit {
       if (pts && pts.length > 0) { this.matTaskPoints = pts.map(Number); this.matTaskCount = String(pts.length); }
       else { this.syncTaskPoints(); }
     }).catch(() => this.syncTaskPoints());
-    // Для КТ подгружаем карту коэффициента курса.
-    if (act.typeLabel === 'КТ' && this.selected) {
-      this.api.getKtCoef(this.selected)
-        .then(map => this.ktCoefRows = (map ?? []).map(r => ({ tasks_solved: Number(r.tasks_solved), multiplier: Number(r.multiplier) })))
-        .catch(() => this.ktCoefRows = []);
-    }
-  }
-
-  addKtCoefRow() {
-    const nextSolved = this.ktCoefRows.length;
-    this.ktCoefRows = [...this.ktCoefRows, { tasks_solved: nextSolved, multiplier: 0 }];
-  }
-  removeKtCoefRow(i: number) { this.ktCoefRows = this.ktCoefRows.filter((_, idx) => idx !== i); }
-  async saveKtCoef() {
-    if (!this.selected) return;
-    const map = this.ktCoefRows
-      .map(r => ({ tasks_solved: Math.max(0, parseInt(String(r.tasks_solved)) || 0), multiplier: Math.max(0, Number(r.multiplier) || 0) }));
-    if (map.length === 0) { this.toast.error('Добавьте хотя бы одну строку'); return; }
-    this.ktCoefSaving = true;
-    try {
-      await this.api.setKtCoef(this.selected, map);
-      this.toast.success('Коэффициенты КТ сохранены');
-    } catch (e: unknown) { this.toast.error(e instanceof Error ? e.message : 'Ошибка'); }
-    finally { this.ktCoefSaving = false; }
   }
 
   // Подгоняет длину массива баллов под «количество задач» (новые — по 1 баллу).
@@ -1558,13 +1498,10 @@ export class AdminComponent implements OnInit {
           .then(list => this.teamStudents = list.filter(s => s.role === 'Student').map(s => ({ id: s.id, displayName: s.displayName })))
           .catch(() => this.teamStudents = []);
       }
-      // #3 — включаем и подавших заявку (Pending), и одобренных: при назначении
-      // в команду ассистент автоматически закрепляется за занятием и одобряется,
-      // даже если команды уже сформированы (не нужно пересоздавать).
       this.api.approvedAssistants(actId)
         .then(apps => this.teamAssistantOptions = apps
-          .filter(a => a.status === 'Approved' || a.status === 'Pending')
-          .map(a => ({ id: a.assistantId, displayName: a.assistantName + (a.status === 'Pending' ? ' (заявка)' : '') })))
+          .filter(a => a.status === 'Approved')
+          .map(a => ({ id: a.assistantId, displayName: a.assistantName })))
         .catch(() => this.teamAssistantOptions = []);
     }
     catch { this.teams = []; }
@@ -1818,7 +1755,7 @@ export class AdminComponent implements OnInit {
     return map[type] ?? 'bg-[#F3F4F6] text-[#6B7280]';
   }
   actTypeLabelNum(type: number) {
-    const map: Record<number, string> = { 1: 'Лекция', 2: 'КТ', 3: 'Дорешка' };
+    const map: Record<number, string> = { 1: 'Лекция', 2: 'КТ', 3: 'ДЗ-сессия' };
     return map[type] ?? 'Занятие';
   }
   fmtDateShort(d: string) { return new Date(d).toLocaleDateString('ru', { day: 'numeric', month: 'short', year: 'numeric' }); }
@@ -1831,7 +1768,7 @@ export class AdminComponent implements OnInit {
     return 'text-[#DC2626] bg-[#FEE2E2]';
   }
   actTypeLabel(type: string) {
-    return type === 'Lecture' ? 'Лекция' : type === 'ControlPoint' ? 'КТ' : 'Дорешка';
+    return type === 'Lecture' ? 'Лекция' : type === 'ControlPoint' ? 'КТ' : 'ДЗ-сессия';
   }
   statusBadge(s: string) {
     const map: Record<string, string> = { Active: 'bg-[#D1FAE5] text-[#059669]', Finished: 'bg-[#F3F4F6] text-[#9CA3AF]', Scheduled: 'bg-[#FEF3C7] text-[#D97706]' };
