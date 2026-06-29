@@ -45,6 +45,8 @@ public sealed class ScoreHubDbContext : DbContext
 
     public DbSet<GradeOverride> GradeOverrides => Set<GradeOverride>();
 
+    public DbSet<CourseAssistantRequest> CourseAssistantRequests => Set<CourseAssistantRequest>();
+
     public DbSet<CourseTemplate> CourseTemplates => Set<CourseTemplate>();
     public DbSet<ModuleTemplate> ModuleTemplates => Set<ModuleTemplate>();
     public DbSet<ActivityTemplate> ActivityTemplates => Set<ActivityTemplate>();
@@ -179,5 +181,17 @@ public sealed class ScoreHubDbContext : DbContext
         modelBuilder.Entity<AssistantApplication>()
             .HasOne(x => x.Activity).WithMany()
             .HasForeignKey(x => x.ActivityId).OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<CourseAssistantRequest>()
+            .HasIndex(x => new { x.CourseId, x.UserId })
+            .IsUnique();
+
+        modelBuilder.Entity<CourseAssistantRequest>()
+            .HasOne(x => x.User).WithMany()
+            .HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<CourseAssistantRequest>()
+            .HasOne(x => x.Course).WithMany()
+            .HasForeignKey(x => x.CourseId).OnDelete(DeleteBehavior.Cascade);
     }
 }

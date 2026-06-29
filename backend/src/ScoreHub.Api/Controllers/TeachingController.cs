@@ -150,6 +150,95 @@ public sealed class TeachingController : ApiControllerBase
         return Ok(new { inviteCode = course.InviteCode });
     }
 
+    /// <summary>Получить ассистентский инвайт-код курса.</summary>
+    [HttpGet("courses/{courseId:guid}/assistant-invite")]
+    public async Task<IActionResult> GetAssistantInvite(Guid courseId, CancellationToken ct)
+    {
+        var course = await _db.Courses.AsNoTracking()
+            .Select(c => new { c.Id, c.AssistantInviteCode })
+            .FirstOrDefaultAsync(c => c.Id == courseId, ct);
+        if (course is null) return NotFound();
+        return Ok(new { assistantInviteCode = course.AssistantInviteCode });
+    }
+
+    /// <summary>Регенерировать ассистентский инвайт-код курса.</summary>
+    [HttpPost("courses/{courseId:guid}/assistant-invite/regenerate")]
+    public async Task<IActionResult> RegenerateAssistantInvite(Guid courseId, CancellationToken ct)
+    {
+        var course = await _db.Courses.FirstOrDefaultAsync(c => c.Id == courseId, ct);
+        if (course is null) return NotFound();
+        course.AssistantInviteCode = "a" + Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(4)).ToLowerInvariant();
+        await _db.SaveChangesAsync(ct);
+        return Ok(new { assistantInviteCode = course.AssistantInviteCode });
+    }
+
+    /// <summary>Список заявок на роль ассистента курса.</summary>
+    [HttpGet("courses/{courseId:guid}/assistant-requests")]
+    public async Task<IActionResult> GetAssistantRequests(Guid courseId, CancellationToken ct)
+    {
+        var requests = await _db.CourseAssistantRequests
+            .AsNoTracking()
+            .Where(r => r.CourseId == courseId)
+            .Join(_db.Users, r => r.UserId, u => u.Id, (r, u) => new
+            {
+                r.Id,
+                r.Status,
+                r.AppliedAt,
+                r.ReviewedAt,
+                UserId = u.Id,
+                u.DisplayName,
+                u.Email
+            })
+            .OrderBy(r => r.AppliedAt)
+            .ToListAsync(ct);
+        return Ok(requests);
+    }
+
+    /// <summary>Одобрить заявку ассистента: меняет роль пользователя на Assistant и зачисляет в курс.</summary>
+    [HttpPost("courses/{courseId:guid}/assistant-requests/{requestId:guid}/approve")]
+    public async Task<IActionResult> ApproveAssistantRequest(Guid courseId, Guid requestId, CancellationToken ct)
+    {
+        var request = await _db.CourseAssistantRequests
+            .FirstOrDefaultAsync(r => r.Id == requestId && r.CourseId == courseId, ct);
+        if (request is null) return NotFound();
+
+        request.Status = "Approved";
+        request.ReviewedAt = DateTimeOffset.UtcNow;
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == request.UserId, ct);
+        if (user is not null)
+            user.Role = UserRole.Assistant;
+
+        var alreadyEnrolled = await _db.CourseEnrollments
+            .AnyAsync(e => e.CourseId == courseId && e.UserId == request.UserId, ct);
+        if (!alreadyEnrolled)
+        {
+            _db.CourseEnrollments.Add(new CourseEnrollment
+            {
+                CourseId = courseId,
+                UserId = request.UserId,
+                EnrolledAt = DateTimeOffset.UtcNow
+            });
+        }
+
+        await _db.SaveChangesAsync(ct);
+        return Ok();
+    }
+
+    /// <summary>Отклонить заявку ассистента.</summary>
+    [HttpPost("courses/{courseId:guid}/assistant-requests/{requestId:guid}/reject")]
+    public async Task<IActionResult> RejectAssistantRequest(Guid courseId, Guid requestId, CancellationToken ct)
+    {
+        var request = await _db.CourseAssistantRequests
+            .FirstOrDefaultAsync(r => r.Id == requestId && r.CourseId == courseId, ct);
+        if (request is null) return NotFound();
+
+        request.Status = "Rejected";
+        request.ReviewedAt = DateTimeOffset.UtcNow;
+        await _db.SaveChangesAsync(ct);
+        return Ok();
+    }
+
     /// <summary>Добавить модуль в курс (номер, название, даты модуля).</summary>
     [HttpPost("courses/{courseId:guid}/modules")]
     public async Task<IActionResult> AddModule(Guid courseId, [FromBody] AddModuleDto dto, CancellationToken ct)

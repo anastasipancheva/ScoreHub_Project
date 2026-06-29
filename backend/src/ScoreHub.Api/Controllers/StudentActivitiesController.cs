@@ -187,4 +187,39 @@ public sealed class StudentActivitiesController : ApiControllerBase
     }
 
     public sealed record EnrollDto(string? InviteCode);
+
+    /// <summary>Подать заявку на роль ассистента курса по ассистентскому инвайт-коду.</summary>
+    [HttpPost("courses/{courseId:guid}/apply-assistant")]
+    public async Task<IActionResult> ApplyAssistant(Guid courseId, [FromBody] ApplyAssistantDto dto, CancellationToken ct)
+    {
+        var uid = CurrentUserId;
+        if (uid is null) return Unauthorized();
+
+        var course = await _db.Courses.FirstOrDefaultAsync(c => c.Id == courseId, ct);
+        if (course is null) return NotFound();
+
+        if (string.IsNullOrWhiteSpace(dto.AssistantInviteCode) ||
+            !string.Equals(course.AssistantInviteCode, dto.AssistantInviteCode.Trim().ToLowerInvariant(), StringComparison.Ordinal))
+        {
+            return BadRequest(new { error = "Неверный код ассистентского приглашения." });
+        }
+
+        var existing = await _db.CourseAssistantRequests
+            .FirstOrDefaultAsync(r => r.CourseId == courseId && r.UserId == uid.Value, ct);
+        if (existing is not null)
+            return Conflict(new { error = "Заявка уже подана.", status = existing.Status });
+
+        _db.CourseAssistantRequests.Add(new ScoreHub.Domain.Entities.CourseAssistantRequest
+        {
+            Id = Guid.NewGuid(),
+            CourseId = courseId,
+            UserId = uid.Value,
+            Status = "Pending",
+            AppliedAt = DateTimeOffset.UtcNow
+        });
+        await _db.SaveChangesAsync(ct);
+        return Ok(new { status = "Pending" });
+    }
+
+    public sealed record ApplyAssistantDto(string? AssistantInviteCode);
 }

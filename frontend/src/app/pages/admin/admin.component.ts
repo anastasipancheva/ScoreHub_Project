@@ -420,7 +420,7 @@ function defaultAcademicYear() {
               [class]="studentsSubTab === 'students' ? 'bg-white text-[#005BFF] shadow-sm' : 'text-[#6B7280] hover:text-[#1A1A1B]'">
               Студенты
             </button>
-            <button (click)="studentsSubTab = 'staff'"
+            <button (click)="studentsSubTab = 'staff'; loadAssistantRequests()"
               class="px-4 py-1.5 rounded-md text-sm font-medium transition-colors"
               [class]="studentsSubTab === 'staff' ? 'bg-white text-[#005BFF] shadow-sm' : 'text-[#6B7280] hover:text-[#1A1A1B]'">
               Персонал
@@ -509,6 +509,55 @@ function defaultAcademicYear() {
           }
 
           @if (studentsSubTab === 'staff') {
+            <!-- Pending assistant requests -->
+            @if (selected) {
+              <div class="bg-white rounded-xl border border-[#DDD6FE] overflow-hidden">
+                <div class="px-5 py-3 border-b border-[#DDD6FE] flex items-center justify-between bg-[#F5F3FF]">
+                  <div class="flex items-center gap-2">
+                    <p class="text-sm font-semibold text-[#7C3AED]">🎓 Заявки на роль ассистента</p>
+                    @if (pendingAssistantRequests.length > 0) {
+                      <span class="text-xs bg-[#7C3AED] text-white px-2 py-0.5 rounded-full font-bold">{{ pendingAssistantRequests.length }}</span>
+                    }
+                  </div>
+                  <button (click)="loadAssistantRequests()" [class]="BTN_GHOST + ' text-[#7C3AED] border-[#DDD6FE]'">🔄</button>
+                </div>
+                @if (assistantRequestsLoading) {
+                  <p class="px-5 py-4 text-sm text-[#9CA3AF] animate-pulse">Загрузка...</p>
+                } @else if (assistantRequests.length === 0) {
+                  <p class="px-5 py-4 text-sm text-[#9CA3AF]">Нет заявок</p>
+                } @else {
+                  <div class="divide-y divide-[#F3F4F6]">
+                    @for (r of assistantRequests; track r.id) {
+                      <div class="flex items-center justify-between px-5 py-3 gap-3">
+                        <div class="min-w-0">
+                          <p class="text-sm font-medium text-[#1A1A1B] truncate">{{ r.displayName }}</p>
+                          <p class="text-xs text-[#6B7280] truncate">{{ r.email }}</p>
+                          <p class="text-xs text-[#9CA3AF] mt-0.5">{{ r.appliedAt | date:'dd.MM.yyyy HH:mm' }}</p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                          @if (r.status === 'Pending') {
+                            <button (click)="approveRequest(r.id)"
+                              class="h-8 px-3 rounded-lg bg-[#7C3AED] text-white text-xs font-medium hover:bg-[#6D28D9] transition-colors">
+                              ✓ Одобрить
+                            </button>
+                            <button (click)="rejectRequest(r.id)"
+                              class="h-8 px-3 rounded-lg border border-[#FCA5A5] text-[#EF4444] text-xs hover:bg-[#FEF2F2] transition-colors">
+                              ✕
+                            </button>
+                          } @else {
+                            <span class="text-xs px-2 py-0.5 rounded-full font-medium"
+                              [class]="r.status === 'Approved' ? 'bg-[#D1FAE5] text-[#059669]' : 'bg-[#FEE2E2] text-[#DC2626]'">
+                              {{ r.status === 'Approved' ? '✓ Одобрено' : '✕ Отклонено' }}
+                            </span>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            }
+
             <div class="bg-white rounded-xl border border-[#E5E7EB] overflow-hidden">
               <div class="px-5 py-3 border-b border-[#E5E7EB] flex items-center justify-between">
                 <p class="text-sm font-semibold text-[#1A1A1B]">Преподаватели и ассистенты ({{ allStaff.length }})</p>
@@ -989,24 +1038,48 @@ function defaultAcademicYear() {
           <!-- Invite link modal -->
           @if (inviteModal) {
             <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" (click)="inviteModal = false">
-              <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4" (click)="$event.stopPropagation()">
-                <p class="font-semibold text-[#1A1A1B]">🔗 Ссылка-приглашение</p>
-                <p class="text-sm text-[#6B7280]">Отправьте эту ссылку студентам. Только по ней можно записаться на курс.</p>
-                <div class="flex gap-2 items-center">
-                  <input [value]="inviteLink" readonly
-                    class="flex-1 h-9 px-3 rounded-lg border border-[#E5E7EB] text-xs text-[#1A1A1B] bg-[#F9FAFB] outline-none" />
-                  <button (click)="copyInvite()"
-                    class="h-9 px-3 rounded-lg bg-[#005BFF] text-white text-xs font-medium hover:bg-[#0050E6] transition-colors flex-shrink-0">
-                    {{ copied ? '✓' : '📋 Копировать' }}
-                  </button>
-                </div>
-                <div class="flex gap-2 pt-1">
-                  <button (click)="inviteModal = false" [class]="BTN_GHOST + ' flex-1'">Закрыть</button>
+              <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-5" (click)="$event.stopPropagation()">
+                <p class="font-semibold text-[#1A1A1B]">🔗 Ссылки-приглашения</p>
+
+                <!-- Student link -->
+                <div class="space-y-2">
+                  <p class="text-xs font-medium text-[#6B7280] uppercase tracking-wide">Для студентов</p>
+                  <p class="text-xs text-[#9CA3AF]">Студент переходит по ссылке и сразу записывается на курс.</p>
+                  <div class="flex gap-2 items-center">
+                    <input [value]="inviteLink" readonly
+                      class="flex-1 h-9 px-3 rounded-lg border border-[#E5E7EB] text-xs text-[#1A1A1B] bg-[#F9FAFB] outline-none" />
+                    <button (click)="copyInvite()"
+                      class="h-9 px-3 rounded-lg bg-[#005BFF] text-white text-xs font-medium hover:bg-[#0050E6] transition-colors flex-shrink-0">
+                      {{ copied ? '✓' : '📋' }}
+                    </button>
+                  </div>
                   <button (click)="regenerateInvite()" [disabled]="inviteRegenerating"
-                    class="flex-1 h-9 rounded-lg border border-[#FCA5A5] text-[#EF4444] text-xs font-medium hover:bg-[#FEF2F2] transition-colors disabled:opacity-60">
-                    {{ inviteRegenerating ? '⏳...' : '🔄 Новый код' }}
+                    class="w-full h-8 rounded-lg border border-[#FCA5A5] text-[#EF4444] text-xs font-medium hover:bg-[#FEF2F2] transition-colors disabled:opacity-60">
+                    {{ inviteRegenerating ? '⏳...' : '🔄 Новый код студентов' }}
                   </button>
                 </div>
+
+                <div class="border-t border-[#E5E7EB]"></div>
+
+                <!-- Assistant link -->
+                <div class="space-y-2">
+                  <p class="text-xs font-medium text-[#7C3AED] uppercase tracking-wide">Для ассистентов</p>
+                  <p class="text-xs text-[#9CA3AF]">Пользователь переходит по ссылке → подаёт заявку → вы одобряете в один клик.</p>
+                  <div class="flex gap-2 items-center">
+                    <input [value]="assistantInviteLink" readonly
+                      class="flex-1 h-9 px-3 rounded-lg border border-[#DDD6FE] text-xs text-[#1A1A1B] bg-[#F9FAFB] outline-none" />
+                    <button (click)="copyAssistantInvite()"
+                      class="h-9 px-3 rounded-lg bg-[#7C3AED] text-white text-xs font-medium hover:bg-[#6D28D9] transition-colors flex-shrink-0">
+                      {{ copiedAssistant ? '✓' : '📋' }}
+                    </button>
+                  </div>
+                  <button (click)="regenerateAssistantInvite()" [disabled]="assistantInviteRegenerating"
+                    class="w-full h-8 rounded-lg border border-[#DDD6FE] text-[#7C3AED] text-xs font-medium hover:bg-[#F5F3FF] transition-colors disabled:opacity-60">
+                    {{ assistantInviteRegenerating ? '⏳...' : '🔄 Новый код ассистентов' }}
+                  </button>
+                </div>
+
+                <button (click)="inviteModal = false" [class]="BTN_GHOST + ' w-full'">Закрыть</button>
               </div>
             </div>
           }
@@ -1172,9 +1245,17 @@ export class AdminComponent implements OnInit {
   // Invite modal
   inviteModal = false;
   inviteLink = '';
+  assistantInviteLink = '';
   inviteCourseId = '';
   inviteRegenerating = false;
+  assistantInviteRegenerating = false;
   copied = false;
+  copiedAssistant = false;
+
+  // Assistant requests
+  assistantRequests: { id: string; status: string; appliedAt: string; userId: string; displayName: string; email: string }[] = [];
+  assistantRequestsLoading = false;
+  get pendingAssistantRequests() { return this.assistantRequests.filter(r => r.status === 'Pending'); }
 
   readonly tabs: { key: Tab; label: string }[] = [
     { key: 'courses', label: 'Курсы' },
@@ -1221,7 +1302,7 @@ export class AdminComponent implements OnInit {
     if (!this.selected) return;
     if (this.tab === 'scores') this.api.courseScores(this.selected).then(s => this.allScores = s).catch(() => this.allScores = []);
     if (this.tab === 'structure') this.loadStructure();
-    if (this.tab === 'students') this.loadStudents();
+    if (this.tab === 'students') { this.loadStudents(); this.loadAssistantRequests(); }
     if (this.tab === 'schedule' || this.tab === 'materials' || this.tab === 'teams') this.loadSchedule();
   }
 
@@ -1722,11 +1803,16 @@ export class AdminComponent implements OnInit {
   async showInvite(courseId: string) {
     this.inviteCourseId = courseId;
     this.copied = false;
+    this.copiedAssistant = false;
     try {
-      const r = await this.api.getCourseInvite(courseId);
-      this.inviteLink = `${window.location.origin}/join/${r.inviteCode}`;
+      const [student, assistant] = await Promise.all([
+        this.api.getCourseInvite(courseId),
+        this.api.getCourseAssistantInvite(courseId),
+      ]);
+      this.inviteLink = `${window.location.origin}/join/${student.inviteCode}`;
+      this.assistantInviteLink = `${window.location.origin}/join-assistant/${assistant.assistantInviteCode}`;
       this.inviteModal = true;
-    } catch { this.toast.error('Не удалось получить ссылку'); }
+    } catch { this.toast.error('Не удалось получить ссылки'); }
   }
 
   async copyInvite() {
@@ -1737,16 +1823,65 @@ export class AdminComponent implements OnInit {
     } catch { this.toast.error('Не удалось скопировать'); }
   }
 
+  async copyAssistantInvite() {
+    try {
+      await navigator.clipboard.writeText(this.assistantInviteLink);
+      this.copiedAssistant = true;
+      setTimeout(() => this.copiedAssistant = false, 2000);
+    } catch { this.toast.error('Не удалось скопировать'); }
+  }
+
   async regenerateInvite() {
-    if (!confirm('Старая ссылка перестанет работать. Продолжить?')) return;
+    if (!confirm('Старая ссылка студентов перестанет работать. Продолжить?')) return;
     this.inviteRegenerating = true;
     try {
       const r = await this.api.regenerateCourseInvite(this.inviteCourseId);
       this.inviteLink = `${window.location.origin}/join/${r.inviteCode}`;
       this.copied = false;
-      this.toast.success('Новый код создан');
+      this.toast.success('Новый код студентов создан');
     } catch { this.toast.error('Ошибка'); }
     finally { this.inviteRegenerating = false; }
+  }
+
+  async regenerateAssistantInvite() {
+    if (!confirm('Старая ссылка ассистентов перестанет работать. Продолжить?')) return;
+    this.assistantInviteRegenerating = true;
+    try {
+      const r = await this.api.regenerateCourseAssistantInvite(this.inviteCourseId);
+      this.assistantInviteLink = `${window.location.origin}/join-assistant/${r.assistantInviteCode}`;
+      this.copiedAssistant = false;
+      this.toast.success('Новый код ассистентов создан');
+    } catch { this.toast.error('Ошибка'); }
+    finally { this.assistantInviteRegenerating = false; }
+  }
+
+  // ── Assistant requests ────────────────────────────────────────────────────
+  async loadAssistantRequests() {
+    if (!this.selected) return;
+    this.assistantRequestsLoading = true;
+    try {
+      this.assistantRequests = await this.api.getAssistantRequests(this.selected);
+    } catch { this.toast.error('Не удалось загрузить заявки'); }
+    finally { this.assistantRequestsLoading = false; }
+  }
+
+  async approveRequest(requestId: string) {
+    if (!this.selected) return;
+    try {
+      await this.api.approveAssistantRequest(this.selected, requestId);
+      this.toast.success('Заявка одобрена, роль ассистента присвоена');
+      await this.loadAssistantRequests();
+      await this.loadStudents();
+    } catch { this.toast.error('Ошибка при одобрении'); }
+  }
+
+  async rejectRequest(requestId: string) {
+    if (!this.selected) return;
+    try {
+      await this.api.rejectAssistantRequest(this.selected, requestId);
+      this.toast.success('Заявка отклонена');
+      await this.loadAssistantRequests();
+    } catch { this.toast.error('Ошибка при отклонении'); }
   }
 
   actTypeClass(type: number) {

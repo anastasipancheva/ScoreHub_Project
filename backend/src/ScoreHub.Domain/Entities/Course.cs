@@ -19,6 +19,9 @@ public sealed class Course
     /// <summary>Уникальный код приглашения (8 симв.). Студент может записаться только зная этот код.</summary>
     public string InviteCode { get; set; } = null!;
 
+    /// <summary>Отдельный инвайт-код для ассистентов. По нему подаётся заявка, которую одобряет преподаватель.</summary>
+    public string AssistantInviteCode { get; set; } = null!;
+
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 
     public List<Module> Modules { get; set; } = new();

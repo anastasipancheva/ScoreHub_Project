@@ -34,6 +34,7 @@ public sealed class TeachingSetupService : ITeachingSetupService
             Title = title.Trim(),
             AcademicYear = academicYear.Trim(),
             InviteCode = Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(4)).ToLowerInvariant(),
+            AssistantInviteCode = "a" + Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(4)).ToLowerInvariant(),
             CreatedAt = DateTimeOffset.UtcNow
         };
         _db.Courses.Add(c);

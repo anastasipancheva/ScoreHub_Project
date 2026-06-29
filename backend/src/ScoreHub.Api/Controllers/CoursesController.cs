@@ -64,6 +64,20 @@ public sealed class CoursesController : ControllerBase
         return course is null ? NotFound(new { error = "Курс не найден или ссылка недействительна." }) : Ok(course);
     }
 
+    /// <summary>Получить информацию о курсе по ассистентскому инвайт-коду.</summary>
+    [HttpGet("by-assistant-invite/{code}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ByAssistantInviteCode(string code, CancellationToken ct)
+    {
+        var course = await _db.Courses
+            .AsNoTracking()
+            .Where(c => c.AssistantInviteCode == code.ToLowerInvariant())
+            .Select(c => new { c.Id, c.Code, c.Title, c.AcademicYear })
+            .FirstOrDefaultAsync(ct);
+
+        return course is null ? NotFound(new { error = "Курс не найден или ссылка недействительна." }) : Ok(course);
+    }
+
     /// <summary>Список студентов, записанных на курс.</summary>
     [HttpGet("{courseId:guid}/students")]
     public async Task<IActionResult> GetStudents(Guid courseId, CancellationToken ct)

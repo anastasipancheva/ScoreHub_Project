@@ -65,6 +65,28 @@ export class ApiService {
   regenerateCourseInvite(courseId: string) {
     return this.post<{ inviteCode: string }>(`/api/teaching/courses/${courseId}/invite/regenerate`);
   }
+  getCourseByAssistantInvite(code: string) {
+    return this.get<{ id: string; code: string; title: string; academicYear: string }>(`/api/courses/by-assistant-invite/${code}`);
+  }
+  getCourseAssistantInvite(courseId: string) {
+    return this.get<{ assistantInviteCode: string }>(`/api/teaching/courses/${courseId}/assistant-invite`);
+  }
+  regenerateCourseAssistantInvite(courseId: string) {
+    return this.post<{ assistantInviteCode: string }>(`/api/teaching/courses/${courseId}/assistant-invite/regenerate`);
+  }
+  applyAssistant(courseId: string, assistantInviteCode: string) {
+    return this.post<{ status: string }>(`/api/student/courses/${courseId}/apply-assistant`, { assistantInviteCode });
+  }
+  getAssistantRequests(courseId: string) {
+    return this.get<{ id: string; status: string; appliedAt: string; userId: string; displayName: string; email: string }[]>
+      (`/api/teaching/courses/${courseId}/assistant-requests`);
+  }
+  approveAssistantRequest(courseId: string, requestId: string) {
+    return this.post<void>(`/api/teaching/courses/${courseId}/assistant-requests/${requestId}/approve`);
+  }
+  rejectAssistantRequest(courseId: string, requestId: string) {
+    return this.post<void>(`/api/teaching/courses/${courseId}/assistant-requests/${requestId}/reject`);
+  }
   courseStructure(courseId: string) { return this.get<CourseStructure>(`/api/teaching/courses/${courseId}/structure`); }
 
   // Student

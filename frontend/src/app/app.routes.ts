@@ -7,6 +7,10 @@ export const routes: Routes = [
     path: 'join/:code',
     loadComponent: () => import('./pages/join/join.component').then(m => m.JoinComponent),
   },
+  {
+    path: 'join-assistant/:code',
+    loadComponent: () => import('./pages/join-assistant/join-assistant.component').then(m => m.JoinAssistantComponent),
+  },
 
   // Guest routes
   {
