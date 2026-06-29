@@ -74,7 +74,7 @@ export class ApiService {
   regenerateCourseAssistantInvite(courseId: string) {
     return this.post<{ assistantInviteCode: string }>(`/api/teaching/courses/${courseId}/assistant-invite/regenerate`);
   }
-  applyAssistant(courseId: string, assistantInviteCode: string) {
+  applyCourseAssistant(courseId: string, assistantInviteCode: string) {
     return this.post<{ status: string }>(`/api/student/courses/${courseId}/apply-assistant`, { assistantInviteCode });
   }
   getAssistantRequests(courseId: string) {

@@ -130,7 +130,7 @@ export class JoinAssistantComponent implements OnInit {
     if (!this.course) return;
     this.applying = true;
     try {
-      await this.api.applyAssistant(this.course.id, this.inviteCode);
+      await this.api.applyCourseAssistant(this.course.id, this.inviteCode);
       this.submitted = true;
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Ошибка';
